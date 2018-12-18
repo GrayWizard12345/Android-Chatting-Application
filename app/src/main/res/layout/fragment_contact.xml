@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/profile_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/default_profile_icon"
+        android:background="@drawable/round_background"
+        android:layout_gravity="center"
+        />
+
+
+    <TextView
+        android:id="@+id/contact_number"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:text="User identifier"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAlignment="viewStart"
+        android:textStyle="bold"
+        android:padding="5dp"
+        />
+
+</LinearLayout>
