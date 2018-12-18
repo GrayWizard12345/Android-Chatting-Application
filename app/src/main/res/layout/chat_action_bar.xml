@@ -22,17 +22,9 @@
                 android:layout_width="50dp"
                 android:layout_margin="10dp"
                 android:src="@drawable/default_profile_icon"
+                android:background="@drawable/round_background"
                 android:scaleType="centerCrop"
         />
-        <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/profile_image"
-                android:layout_width="50"
-                android:layout_height="50"
-                android:src="@drawable/"
-                app:civ_border_color="@color/colorAccent"
-                app:civ_border_width="3dp" />
-
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,7 +45,7 @@
                 android:layout_gravity="center_vertical"
                 android:background="@android:color/transparent"
                 android:layout_margin="10dp"
-                />
+        />
 
 
     </TableRow>
