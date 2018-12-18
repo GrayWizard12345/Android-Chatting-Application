@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
@@ -10,6 +11,7 @@
     >
 
     <LinearLayout
+        android:id="@+id/main_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -28,7 +30,7 @@
 
             <fragment
                 android:id="@+id/chat_action_bar"
-                android:name="com.example.hamlet.mobileprogrammingclass_chat_project.activities.BlankFragment"
+                android:name="com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatActionBarFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:layout="@layout/chat_action_bar_layout" />
@@ -53,7 +55,7 @@
 
                 <fragment
                     android:id="@+id/navigation_buttons"
-                    android:name="com.example.hamlet.mobileprogrammingclass_chat_project.activities.bottom_navigation_menu_fragment"
+                    android:name="com.example.hamlet.mobileprogrammingclass_chat_project.fragments.BottomNavigationMenuFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom |center"
@@ -66,7 +68,7 @@
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/nvView"
+        android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
