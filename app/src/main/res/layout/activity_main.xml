@@ -22,20 +22,6 @@
             android:layout_height="wrap_content"
             />
 
-        <FrameLayout
-            android:id="@+id/frame_chat_action_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top |center">
-
-            <fragment
-                android:id="@+id/chat_action_bar"
-                android:name="com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatActionBarFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout="@layout/chat_action_bar_layout" />
-
-        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/frame_content"
