@@ -1,6 +1,7 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.activities;
 
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews(savedInstanceState);
+
+
         fragmentStack = new Stack<>();
 
 
