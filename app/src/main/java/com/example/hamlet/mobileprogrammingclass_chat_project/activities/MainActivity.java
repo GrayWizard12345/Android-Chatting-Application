@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 
 import java.util.Objects;
 
@@ -87,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //fragmentClass = FirstFragment.class;
                 break;
             default:
-                fragmentClass = ContactFragment.class;
+                fragmentClass = ContactsFragment.class;
         }
-        fragmentClass = ContactFragment.class;
+        fragmentClass = ContactsFragment.class;
         try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
