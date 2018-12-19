@@ -1,6 +1,8 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
 import android.graphics.drawable.Icon;
+import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 
 import java.util.ArrayList;
 
@@ -57,6 +59,8 @@ public class User {
     }
 
     public Icon getUserIcon() {
+        if(this.userIcon == null)
+            userIcon = Icon.createWithResource("resources", R.drawable.default_profile_icon);
         return userIcon;
     }
 

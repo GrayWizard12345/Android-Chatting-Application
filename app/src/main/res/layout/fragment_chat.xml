@@ -19,8 +19,8 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:padding="2"
-        android:background="@color/colorPrimary">
+        android:padding="2dp"
+        android:background="@drawable/shape_fancy_layout">
 
         <EditText
             android:id="@+id/input_text"
@@ -33,9 +33,11 @@
             android:text="->"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="end|center"
             android:layout_weight="1"
-            android:src="@drawable/ic_send_black_24dp"/>
+            android:src="@drawable/ic_send_black_24dp"
+            android:background="@color/transparent"
+        />
 
     </LinearLayout>
 

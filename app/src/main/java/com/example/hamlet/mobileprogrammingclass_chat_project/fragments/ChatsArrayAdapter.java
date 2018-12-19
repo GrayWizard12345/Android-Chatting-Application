@@ -51,7 +51,7 @@ public class ChatsArrayAdapter extends ArrayAdapter {
         holder.messageCounterButton = convertView.findViewById(R.id.unread_message_counter);
         String lastMessage = " ";
         if(!chat.getMessages().isEmpty())
-            lastMessage = chat.getMessages().get(chat.getMessages().size()).getText();
+            lastMessage = chat.getMessages().get(chat.getMessages().size() - 1).getText();
         holder.setData(chat.getSender().getUserIcon(),
                 chat.getSender().getName(), lastMessage,
                 chat.getUnreadMessagesCounter());
