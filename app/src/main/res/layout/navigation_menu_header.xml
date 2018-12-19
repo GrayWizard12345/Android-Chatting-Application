@@ -1,17 +1,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-    android:background="?attr/colorPrimaryDark"
+    android:background="@drawable/wood_background"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:orientation="vertical"
-    android:gravity="bottom">
+    android:orientation="horizontal"
+    android:gravity="bottom"
+>
+
+    <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/round_background"
+            android:src="@drawable/default_profile_icon"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+    />
 
     <TextView
+        android:id="@+id/account_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Header"
         android:textColor="@android:color/white"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:layout_marginStart="20dp"
+        android:layout_gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
 </LinearLayout>

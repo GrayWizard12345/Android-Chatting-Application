@@ -1,20 +1,25 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.activities;
 
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -24,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initViews();
+        initViews(savedInstanceState);
 
 
 
@@ -33,82 +38,77 @@ public class MainActivity extends AppCompatActivity {
     /*
     * Initializes all views
      */
-    private void initViews(){
+    private void initViews(Bundle savedInstanceState){
 
-        toolbar =  findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationMenu = findViewById(R.id.navigation_view);
-        navigationMenu.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        Fragment fragment = null;
-                        Class fragmentClass;
-                        switch(menuItem.getItemId()) {
-                            case R.id.nav_chats:
-                                //TODO initialize fragment class to corresponding fragment class
-                                //fragmentClass = FirstFragment.class;
-                                break;
-                            case R.id.nav_contacts:
-                                //TODO initialize fragment class to corresponding fragment class
-                                //fragmentClass = FirstFragment.class;
-                                break;
-                            case R.id.nav_settings:
-                                //TODO initialize fragment class to corresponding fragment class
-                                //fragmentClass = FirstFragment.class;
-                                break;
-                            default:
-                                fragmentClass = ContactFragment.class;
-                        }
-                        fragmentClass = ContactFragment.class;
-                        try {
-                            fragment = (Fragment) fragmentClass.newInstance();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+        if(savedInstanceState==null){
+            navigationMenu.setNavigationItemSelectedListener(this);
+            navigationMenu.setCheckedItem(R.id.nav_chats);
+        }
 
-                        // Insert the fragment by replacing any existing fragment
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).commit();
-
-                        // Highlight the selected item has been done by NavigationView
-                        menuItem.setChecked(true);
-                        // Set action bar title
-                        setTitle(menuItem.getTitle());
-                        // Close the navigation drawer
-                        drawerLayout.closeDrawers();
-
-                        return true;
-                    }
-                });
-
-
+        toolbar =  findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         setSupportActionBar(toolbar);
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar ,  R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                //getActionBar().setTitle(mTitle);
-                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                //getActionBar().setTitle(mDrawerTitle);
-                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-
-        // Set the drawer toggle as the DrawerListener
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar ,  R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle.setDrawerSlideAnimationEnabled(true);
         drawerLayout.addDrawerListener(mDrawerToggle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mDrawerToggle.syncState();
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else
+            super.onBackPressed();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Fragment fragment = null;
+        Class fragmentClass;
+        switch(menuItem.getItemId()) {
+            case R.id.nav_chats:
+                //TODO initialize fragment class to corresponding fragment class
+                //fragmentClass = FirstFragment.class;
+                break;
+            case R.id.nav_contacts:
+                //TODO initialize fragment class to corresponding fragment class
+                //fragmentClass = FirstFragment.class;
+                break;
+            case R.id.nav_settings:
+                //TODO initialize fragment class to corresponding fragment class
+                //fragmentClass = FirstFragment.class;
+                break;
+            default:
+                fragmentClass = ContactFragment.class;
+        }
+        fragmentClass = ContactFragment.class;
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        menuItem.setChecked(true);
+        // Set action bar title
+        setTitle(menuItem.getTitle());
+        // Close the navigation drawer
+        drawerLayout.closeDrawers();
+
+        return true;
+    }
 }
+
 
