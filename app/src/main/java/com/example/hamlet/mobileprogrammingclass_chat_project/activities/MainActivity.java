@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
-import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactFragment;
 
 public class MainActivity extends AppCompatActivity {
 
