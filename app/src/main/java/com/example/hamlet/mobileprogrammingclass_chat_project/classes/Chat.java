@@ -20,6 +20,14 @@ public class Chat {
         this.unreadMessagesCounter = unreadMessagesCounter;
     }
 
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
     public int getChatId() {
         return chatId;
     }

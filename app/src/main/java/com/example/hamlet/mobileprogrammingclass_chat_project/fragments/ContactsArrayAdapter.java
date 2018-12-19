@@ -52,6 +52,7 @@ public class ContactsArrayAdapter extends ArrayAdapter {
     }
 
     private class ContactViewHolder {
+
         ImageView contactImageView;
         TextView contactNameTextView;
         TextView contactIdentifierTextView;
