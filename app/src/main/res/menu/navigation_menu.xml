@@ -3,9 +3,12 @@
 
     <group>
         <item
-            android:id="@+id/nav_chats"
-            android:icon="@drawable/chats_icon_24dp"
-            android:title="@string/chats" />
+                android:id="@+id/nav_chats"
+                android:icon="@drawable/chats_icon_24dp"
+                android:title="@string/chats" />
+    </group>
+
+    <group>
         <item
             android:id="@+id/nav_contacts"
             android:icon="@drawable/contacts_icon_24dp"

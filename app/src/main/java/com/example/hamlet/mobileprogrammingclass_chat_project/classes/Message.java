@@ -1,16 +1,16 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 public class Message {
 
     private String text;
     private String date;
-
-    public Message(String text, String date) {
+    private User sender;
+    private User receiver;
+    public Message(String text, String date, User sender, User receiver) {
         this.text = text;
         this.date = date;
+        this.sender = sender;
+        this.receiver = receiver;
     }
 
 
@@ -29,5 +29,21 @@ public class Message {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
+    }
+
+    public User getReceiver() {
+        return receiver;
     }
 }

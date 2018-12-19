@@ -3,12 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ChatsFragment">
+    tools:context=".fragments.ChatsFragment"
+    android:background="@drawable/wood_background"
+>
 
     <ListView
         android:id="@+id/chats_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+    >
 
     </ListView>
 
