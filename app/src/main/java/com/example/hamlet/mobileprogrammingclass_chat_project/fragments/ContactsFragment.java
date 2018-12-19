@@ -16,6 +16,7 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,7 +36,9 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        contacts = new ArrayList<>();
+        Contact contact = new Contact(null, "Muslimbek A", "+998901234567");
+        contacts.add(contact);
         contactsListView = view.findViewById(R.id.contacts_list_view);
         arrayAdapter = new ContactsArrayAdapter(getContext(), contacts);
         contactsListView.setAdapter(arrayAdapter);

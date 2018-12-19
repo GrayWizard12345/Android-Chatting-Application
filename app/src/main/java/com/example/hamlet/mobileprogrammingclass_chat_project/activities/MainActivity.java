@@ -10,12 +10,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 
 import java.util.Objects;
@@ -23,7 +22,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar toolbar;
     private NavigationView navigationMenu;
     @Override
@@ -49,16 +47,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         toolbar =  findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         setSupportActionBar(toolbar);
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar ,  R.string.drawer_open, R.string.drawer_close);
-        mDrawerToggle.setDrawerSlideAnimationEnabled(true);
-        drawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        toggle.setDrawerSlideAnimationEnabled(true);
+        drawerLayout.addDrawerListener(toggle);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
+        toggle.syncState();
     }
 
     @Override
@@ -77,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch(menuItem.getItemId()) {
             case R.id.nav_chats:
                 //TODO initialize fragment class to corresponding fragment class
-                //fragmentClass = FirstFragment.class;
+                fragmentClass = ChatsFragment.class;
                 break;
             case R.id.nav_contacts:
                 //TODO initialize fragment class to corresponding fragment class
-                //fragmentClass = FirstFragment.class;
+                fragmentClass = ContactsFragment.class;
                 break;
             case R.id.nav_settings:
                 //TODO initialize fragment class to corresponding fragment class

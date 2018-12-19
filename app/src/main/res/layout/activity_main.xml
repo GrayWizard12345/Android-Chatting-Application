@@ -26,29 +26,7 @@
         <FrameLayout
             android:id="@+id/frame_content"
             android:layout_width="match_parent"
-            android:layout_height="400dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end">
-            <FrameLayout
-                android:id="@+id/frame_navigation_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom |center">
-
-                <fragment
-                    android:id="@+id/navigation_buttons"
-                    android:name="com.example.hamlet.mobileprogrammingclass_chat_project.fragments.BottomNavigationMenuFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom |center"
-                    tools:layout="@layout/fragment_bottom_navigation_menu_layout" />
-
-            </FrameLayout>
-        </LinearLayout>
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
@@ -61,8 +39,5 @@
         android:background="@android:color/white"
         app:menu="@menu/navigation_menu"
         app:headerLayout="@layout/navigation_menu_header"/>
-
-
-    <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
 
 </android.support.v4.widget.DrawerLayout>

@@ -16,6 +16,7 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,6 +37,7 @@ public class ChatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        chats = new ArrayList<>();
         chatsListView = view.findViewById(R.id.chats_list_view);
         arrayAdapter = new ChatsArrayAdapter(getContext(), chats);
         chatsListView.setAdapter(arrayAdapter);
