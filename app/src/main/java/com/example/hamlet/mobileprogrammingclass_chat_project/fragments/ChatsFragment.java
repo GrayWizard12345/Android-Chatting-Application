@@ -36,10 +36,12 @@ public class ChatsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         chats = new ArrayList<>();
+        User receiver = new User(1, "Muslimbek", "muslim4ik14@gmail.com", "+998909327598");
+        User sender = new User(0, "ChatterBoxSupport", "support.chatterbox@gmail.com", "+998909327598");
+
         ArrayList<Message> messages = new ArrayList<Message>();
-        messages.add(new Message("Hello world", "12.12.12", sender));
-        Chat chat = new Chat(0, messages, new User(0,
-                "Muslim", "muslim4ik14@gmail.com", ""), false, 0);
+        messages.add(new Message("Hello world", "12.12.12", sender, receiver));
+        Chat chat = new Chat(0, messages, receiver, false, 0);
         chats.add(chat);
         chatsListView = view.findViewById(R.id.chats_list_view);
         arrayAdapter = new ChatsArrayAdapter(getContext(), chats);
