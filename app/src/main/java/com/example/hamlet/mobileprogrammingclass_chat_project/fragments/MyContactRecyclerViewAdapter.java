@@ -58,6 +58,9 @@ public class MyContactRecyclerViewAdapter extends RecyclerView.Adapter<MyContact
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+
+        //testing git
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
