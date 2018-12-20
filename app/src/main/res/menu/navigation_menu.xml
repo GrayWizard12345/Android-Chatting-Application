@@ -14,9 +14,10 @@
             android:icon="@drawable/contacts_icon_24dp"
             android:title="@string/contacts" />
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/settings_icon_24dp"
-            android:title="@string/settings" />
+            android:id="@+id/nav_about_us"
+            android:icon="@drawable/icon_info_black_24dp"
+            android:title="@string/about_us"
+/>
 
     </group>
     

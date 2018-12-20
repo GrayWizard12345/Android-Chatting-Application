@@ -18,4 +18,9 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="about_us">About Us</string>
+    <string name="muslimbek_abduganiev_u1510375">Muslimbek Abduganiev U1510375</string>
+    <string name="leonid_kim_u1510332">Leonid Kim U1510332</string>
+    <string name="nozimakhon_salyamova_u1510341">Nozimakhon Salyamova U1510341</string>
+    <string name="developers">Developers</string>
 </resources>

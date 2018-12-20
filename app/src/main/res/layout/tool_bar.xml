@@ -9,4 +9,42 @@
     app:theme="@style/MyToolbar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     android:background="@color/colorPrimaryDark">
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+    >
+
+        <EditText
+                android:id="@+id/search_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/search"
+                android:textColorHint="@color/colorWhite"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="8dp"
+                android:layout_margin="8dp"
+                android:maxLines="1"
+                android:layout_toStartOf="@+id/search_button"
+                android:visibility="invisible"
+        />
+
+        <ImageButton
+                android:id="@+id/search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="10dp"
+                android:src="@drawable/search_icon_24dp"
+                android:background="@null"
+                android:textSize="23sp"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/search"
+        />
+
+    </RelativeLayout>
+
+
 </android.support.v7.widget.Toolbar>

@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
@@ -55,11 +57,6 @@ public class ChatsFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.search_menu_item, menu);
-        inflater.inflate(R.menu.navigation_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+
 }

@@ -48,9 +48,10 @@ public class ContactsFragment extends Fragment {
         });
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.search_menu_item, menu);
+//        inflater.inflate(R.menu.search_menu_item, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 }
