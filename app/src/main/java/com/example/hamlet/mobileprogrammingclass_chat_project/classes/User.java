@@ -14,9 +14,12 @@ public class User {
     private Icon userIcon;
     private String password;
 
+
+
     public User(int id, String name, String email) {
         this.id = id;
         this.name = name;
+
         this.email = email;
     }
 
@@ -25,6 +28,14 @@ public class User {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public int getId() {
