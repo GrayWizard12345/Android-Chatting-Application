@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:id="@+id/fragment_about_us"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+>
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/developers"
+            android:textAlignment="center"
+    />
+
+<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+
+
+
+
+</LinearLayout>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:maxEms="9"
+            android:text="@string/muslimbek_abduganiev_u1510375"
+            android:textAlignment="center"
+    />
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:maxEms="8"
+            android:text="@string/leonid_kim_u1510332"
+            android:textAlignment="center"
+    />
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:maxEms="10"
+            android:text="@string/nozimakhon_salyamova_u1510341"
+            android:textAlignment="center"
+    />
+
+
+
+
+
+</LinearLayout>
