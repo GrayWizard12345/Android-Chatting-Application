@@ -2,31 +2,35 @@ package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
 import android.graphics.drawable.Icon;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
-import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
-
-import java.util.ArrayList;
 
 public class User {
     private int id;
     private String name;
-    private String email;
     private String phoneNumber;
     private Icon userIcon;
     private String password;
 
 
-
-    public User(int id, String name, String email) {
-        this.id = id;
-        this.name = name;
-
-        this.email = email;
+    public User() {
     }
 
-    public User(int id, String name, String email, String phoneNumber) {
+    public User(int id, String name) {
         this.id = id;
         this.name = name;
-        this.email = email;
+
+    }
+
+    public User(int id, String name, String phoneNumber, Icon userIcon, String password) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.userIcon = userIcon;
+        this.password = password;
+    }
+
+    public User(int id, String name, String phoneNumber) {
+        this.id = id;
+        this.name = name;
         this.phoneNumber = phoneNumber;
     }
 
@@ -52,14 +56,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhoneNumber() {

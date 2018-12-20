@@ -3,13 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ContactsFragment">
+    tools:context=".fragments.ContactsFragment"
+    android:background="@drawable/wood_background"
+    >
 
     <!-- TODO: Update blank fragment layout -->
     <ListView
         android:id="@+id/contacts_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10.0sp"
+        >
 
     </ListView>
 

@@ -32,4 +32,9 @@
         <item name="color">@android:color/white</item>
     </style>
 
+    <style name="contactItemStyle">
+        <item name="android:radius">30dp</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
 </resources>

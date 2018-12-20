@@ -9,6 +9,7 @@
 >
 
     <ImageButton
+            android:id="@+id/current_profile_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:background="@drawable/round_background"

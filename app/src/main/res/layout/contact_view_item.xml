@@ -3,7 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_margin="20dp"
+    style="@style/contactItemStyle"
+    >
     <ImageView
         android:id="@+id/profile_icon"
         android:layout_width="40dp"

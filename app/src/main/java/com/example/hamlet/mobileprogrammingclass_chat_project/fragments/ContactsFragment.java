@@ -1,5 +1,6 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.fragments;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
 
 import java.util.ArrayList;
@@ -32,9 +34,7 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        contacts = new ArrayList<>();
-        Contact contact = new Contact(null, "Muslimbek A", "+998901234567");
-        contacts.add(contact);
+        contacts = MainActivity.contacts;
         contactsListView = view.findViewById(R.id.contacts_list_view);
         arrayAdapter = new ContactsArrayAdapter(getContext(), contacts);
         contactsListView.setAdapter(arrayAdapter);
@@ -43,7 +43,7 @@ public class ContactsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                //TODO click listener for chat item
+                //TODO check if this contact exists in our database
             }
         });
     }
