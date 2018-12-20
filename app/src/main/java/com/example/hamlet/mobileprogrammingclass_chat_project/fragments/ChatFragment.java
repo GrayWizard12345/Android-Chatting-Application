@@ -15,11 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 
+import org.w3c.dom.Text;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
@@ -41,6 +45,9 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //Init messages here
+
+
         messagesListView = view.findViewById(R.id.messages_list_view);
         arrayAdapter = new MessagesArrayAdapter(getContext(), messages);
         messagesListView.setAdapter(arrayAdapter);
@@ -52,9 +59,28 @@ public class ChatFragment extends Fragment {
             public void onClick(View view) {
 
                 //TODO ACTION CLICK LISTENER FOR SEND BUTTON
+                LocalDateTime time = LocalDateTime.now();
+                String messageSendTime = time.toString();
+                String messageText = inputText.getText() + "";
+
+
             }
         });
 
     }
 
+    public void setData(List<Message> messages, Context context)
+    {
+        TextView messageText;
+        for (Message message: messages) {
+             messageText = new TextView(context);
+             messageText.setText(message.getText());
+
+
+        }
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
 }

@@ -7,7 +7,7 @@ public class Chat {
     private int chatId;
     private ArrayList<Message> messages;
     private User sender;
-
+    private User receiver;
     private boolean unread;
     private int unreadMessagesCounter;
 
@@ -58,5 +58,13 @@ public class Chat {
 
     public void setUnreadMessagesCounter(int unreadMessagesCounter) {
         this.unreadMessagesCounter = unreadMessagesCounter;
+    }
+
+    public User getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
     }
 }

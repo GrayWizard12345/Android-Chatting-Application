@@ -1,14 +1,32 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.activities;
 
 
+import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.AdaptiveIconDrawable;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -17,22 +35,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.AboutUsFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
     public static DrawerLayout drawerLayout;
     public static Toolbar toolbar;
+    static boolean searchOpen = false;
     private NavigationView navigationMenu;
+    private static int RESULT_LOAD_IMG;
+    public static User currentUser = new User(1, "Muslimbek", "+998909327598");
+    public static ArrayList<Contact> contacts = new ArrayList<>();
 
     //A simple stack data structure is used to keep track of fragments
     private Stack<Fragment> fragmentStack;
@@ -41,18 +77,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle toggle;
     protected ActionBar actionBar;
     static MenuItem prevMenuItem;
-    boolean mToolBarNavigationListenerIsRegistered = false;
+    private ImageButton profileIcon;
+    private TextView userName;
+    private static  Thread readContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        readContacts = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getContactList();
+            }
+        });
+        readContacts.start();
+
         fragmentStack = new Stack<>();
         fragmentTitleStack = new Stack<>();
+        fragmentManager = getSupportFragmentManager();
+
         initViews(savedInstanceState);
 
 
-        fragmentManager = getSupportFragmentManager();
     }
 
     /*
@@ -78,11 +125,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         toggle.syncState();
-
-        findViewById(R.id.action_search).setOnClickListener(new View.OnClickListener() {
+        ImageButton searchButton = findViewById(R.id.search_button);
+        final EditText searchEditText = findViewById(R.id.search_edit_text);
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toolbarSearchOnClick(v);
+                Log.d("Toolbar Menu Event", searchEditText.getVisibility() + "");
+                if(searchOpen)
+                {
+                    searchEditText.setVisibility(View.INVISIBLE);
+                    searchEditText.setText("");
+                    searchOpen = false;
+                }
+                else
+                {
+                    searchEditText.setVisibility(View.VISIBLE);
+                    searchOpen = true;
+                }
+            }
+        });
+
+        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    // TODO SEARCH HERE
+
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -99,6 +170,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
+        profileIcon = navigationMenu.getHeaderView(0).findViewById(R.id.current_profile_icon);
+        profileIcon.setSoundEffectsEnabled(true);
+        profileIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
+            }
+        });
+
+        userName = navigationMenu.getHeaderView(0).findViewById(R.id.account_name);
+        userName.setText(currentUser.getName());
 
     }
 
@@ -115,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 prevFragment = fragmentStack.pop();
                 title = fragmentTitleStack.pop();
-                if(!fragmentStack.isEmpty())
+                if(!fragmentStack.isEmpty() && !fragmentTitleStack.isEmpty())
                 {
                     prevFragment = fragmentStack.peek();
                     title = fragmentTitleStack.peek();
@@ -125,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else
                 {
                     fragmentStack.push(prevFragment);
+                    fragmentTitleStack.push(title);
                 }
 
             }
@@ -148,6 +233,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_contacts:
                 //TODO initialize fragment class to corresponding fragment class
+                if(readContacts != null) {
+                    try {
+                        readContacts.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 fragmentClass = ContactsFragment.class;
                 break;
             case R.id.nav_about_us:
@@ -229,23 +321,119 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return toggle;
     }
 
-    static boolean searchOpen = false;
-    public void toolbarSearchOnClick(View view) {
 
-        Log.d("Toolbar Menu Event", toolbar.getMenu().getItem(0).getTitle() + "");
-        if(searchOpen)
-        {
-            toolbar.getMenu().getItem(0).setVisible(false);
-            searchOpen = false;
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+
+        if (resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                selectedImage = getRoundedCornerBitmap(selectedImage, 100);
+                profileIcon.setImageBitmap(selectedImage);
+                profileIcon.setBackground(getResources().getDrawable(R.color.transparent));
+                profileIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+
+        }else {
+            Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
-        else
-        {
-            toolbar.getMenu().getItem(0).setVisible(true);
-            searchOpen = true;
-        }
-
-
     }
+
+    //Makes a bitmap image's corners rounded
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+                .getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = pixels;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
+
+
+    //Get all contacts from users phone
+    private void getContactList() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS
+                );
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+            ContentResolver cr = getContentResolver();
+            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                    null, null, null, null);
+
+            if ((cur != null ? cur.getCount() : 0) > 0) {
+                while (cur != null && cur.moveToNext()) {
+                    String id = cur.getString(
+                            cur.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.DISPLAY_NAME));
+
+                    if (cur.getInt(cur.getColumnIndex(
+                            ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                        Cursor pCur = cr.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        while (pCur.moveToNext()) {
+                            String phoneNo = pCur.getString(pCur.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            Contact contact = new Contact();
+                            contact.setContactName(name);
+                            contact.setContactIdentifier(phoneNo);
+                            contacts.add(contact);
+                            Log.d("Contacts read", "Name: " + name);
+                            Log.d("Contacts read", "Phone Number: " + phoneNo);
+                        }
+                        pCur.close();
+                    }
+                }
+            }
+            if (cur != null) {
+                cur.close();
+            }
+        }
+    }
+
 }
 
 
