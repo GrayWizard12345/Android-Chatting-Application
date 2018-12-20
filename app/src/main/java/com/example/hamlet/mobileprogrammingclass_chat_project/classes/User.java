@@ -12,6 +12,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private Icon userIcon;
+    private String password;
 
     public User(int id, String name, String email) {
         this.id = id;
