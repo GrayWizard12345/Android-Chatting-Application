@@ -5,42 +5,93 @@
               android:layout_height="match_parent"
               android:gravity="center_horizontal"
               android:orientation="vertical"
-              tools:context=".activities.LoginActivity">
+              tools:context=".activities.LoginActivity"
+
+    android:background="@drawable/back1">
 
     <ImageView
+        android:id="@+id/logo"
         android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:src="@drawable/logo"
-        android:layout_marginTop="100dp"
-        android:scaleType="centerCrop"/>
+        android:layout_height="123dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logo2" />
+
+
+    <TextView
+        android:id="@+id/textView_phoneNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Phone number"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+         />
 
     <EditText
-        android:id="@+id/user_name_text_view"
-        android:hint="Username"
-        android:layout_width="250dp"
+        android:id="@+id/editText_phoneNum"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/edit_text"
-        android:paddingStart="10dp"/>
+        android:hint="+998"
+        android:layout_marginTop="5dp"
+        android:inputType="phone"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/colorWhite"
+        />
+
+
+    <TextView
+        android:id="@+id/textView_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Password"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
 
     <EditText
-        android:id="@+id/password_text_view"
-        android:hint="Password"
-        android:layout_width="250dp"
+        android:id="@+id/editText_password"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="******"
+        android:inputType="textPassword"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/colorWhite"
+        />
+
+    <ImageButton
         android:layout_marginTop="10dp"
-        android:background="@drawable/edit_text"
-        android:paddingStart="10dp"/>
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="centerCrop"
 
-    <Button
-        android:id="@+id/login_button"
-        android:text="logfsdDFSDFfsdin"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:textColor="#ffffff"
-        android:background="@drawable/button"/>
+        android:src="@drawable/done_btn"
+    android:background="@color/transparent"
+        />
 
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fire_gif"
 
+        />
 
 </LinearLayout>
