@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/message_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/fancy_textview_background"
+        >
+
+
+        <TextView
+            android:id="@+id/message_text"
+            android:text="Hello world!"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:maxEms="12"
+            android:linksClickable="true"
+            />
+
+        <TextView
+            android:id="@+id/message_date"
+            android:text="12:12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>
