@@ -1,13 +1,16 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 
 public class User {
     private int id;
     private String name;
     private String phoneNumber;
-    private Icon userIcon;
+    private Bitmap userIcon;
     private String password;
 
 
@@ -20,7 +23,7 @@ public class User {
 
     }
 
-    public User(int id, String name, String phoneNumber, Icon userIcon, String password) {
+    public User(int id, String name, String phoneNumber, Bitmap userIcon, String password) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -66,13 +69,14 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Icon getUserIcon() {
+    public Bitmap getUserIcon() {
         if(this.userIcon == null)
-            userIcon = Icon.createWithResource("resources", R.drawable.default_profile_icon);
+            userIcon = BitmapFactory.decodeResource(MainActivity.mainActivityContext.getResources(),
+                    R.drawable.default_profile_icon);
         return userIcon;
     }
 
-    public void setUserIcon(Icon userIcon) {
+    public void setUserIcon(Bitmap userIcon) {
         this.userIcon = userIcon;
     }
 }

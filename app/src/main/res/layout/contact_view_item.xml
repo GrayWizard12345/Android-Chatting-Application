@@ -5,7 +5,7 @@
     android:layout_height="60dp"
     android:orientation="horizontal"
     android:layout_margin="20dp"
-    style="@style/contactItemStyle"
+    android:background="@drawable/rounded_background_for_linear_layout"
     >
     <ImageView
         android:id="@+id/profile_icon"

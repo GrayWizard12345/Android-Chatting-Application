@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +15,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +31,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -47,13 +47,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.ApplicationUser;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
-import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.AboutUsFragment;
+import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -64,27 +67,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
     public static DrawerLayout drawerLayout;
     public static Toolbar toolbar;
-    static boolean searchOpen = false;
+    public static boolean searchOpen = false;
     private NavigationView navigationMenu;
     private static int RESULT_LOAD_IMG;
-    public static User currentUser = new User(1, "Muslimbek", "+998909327598");
+    public static int IMG_FOR_SENDING = 666;
+    public static ApplicationUser currentUser = new ApplicationUser(1, "Muslimbek", "+998909327598");
     public static ArrayList<Contact> contacts = new ArrayList<>();
+    public static ArrayList<Chat> chats = new ArrayList<>();
 
     //A simple stack data structure is used to keep track of fragments
-    private Stack<Fragment> fragmentStack;
-    private Stack<String> fragmentTitleStack;
-    private FragmentManager fragmentManager;
+    private static Stack<Fragment> fragmentStack;
+    private static Stack<String> fragmentTitleStack;
+    private static FragmentManager fragmentManager;
     private ActionBarDrawerToggle toggle;
-    protected ActionBar actionBar;
+    protected static ActionBar actionBar;
     static MenuItem prevMenuItem;
     private ImageButton profileIcon;
     private TextView userName;
     private static  Thread readContacts;
+    public static MainActivity mainActivityContext;
+    private static Fragment currentFragmet;
+    public static ArrayList<Contact> contactsSearchResult;
+    public static ArrayList<Chat> chatsSearchResult;
+    public static ImageButton searchButton;
+    public static EditText searchEditText;
+    public static TextView mTitle;
+    public static boolean backProcessing = false;
+    public static boolean imageLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainActivityContext = this;
+
+        fragmentStack = new Stack<>();
+        fragmentTitleStack = new Stack<>();
+        fragmentManager = getSupportFragmentManager();
+
+
+
         readContacts = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -92,10 +114,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         readContacts.start();
-
-        fragmentStack = new Stack<>();
-        fragmentTitleStack = new Stack<>();
-        fragmentManager = getSupportFragmentManager();
 
         initViews(savedInstanceState);
 
@@ -107,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initViews(Bundle savedInstanceState){
 
+        fragmentManager = getSupportFragmentManager();
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationMenu = findViewById(R.id.navigation_view);
         if(savedInstanceState==null){
@@ -117,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         toolbar =  findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.search_menu_item);
+        mTitle = toolbar.findViewById(R.id.toolbar_title);
         setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         toggle.setDrawerSlideAnimationEnabled(true);
@@ -124,9 +145,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         toggle.syncState();
-        ImageButton searchButton = findViewById(R.id.search_button);
-        final EditText searchEditText = findViewById(R.id.search_edit_text);
+        searchButton = findViewById(R.id.search_button);
+        searchEditText = findViewById(R.id.search_edit_text);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,7 +156,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(searchOpen)
                 {
                     searchEditText.setVisibility(View.INVISIBLE);
+                    searchEditText.removeTextChangedListener(searchTextWatcher);
                     searchEditText.setText("");
+                    searchEditText.addTextChangedListener(searchTextWatcher);
                     searchOpen = false;
                 }
                 else
@@ -145,25 +169,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    // TODO SEARCH HERE
-
-                    return true;
-                }
-                return false;
-            }
-        });
+        //Search button listener
+        searchEditText.addTextChangedListener(searchTextWatcher);
 
         Class fragmentClass = ChatsFragment.class;
         try {
             Fragment fragment = (Fragment) fragmentClass.newInstance();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).commit();
+            ((ChatsFragment)fragment).setChats(chats);
+            fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
             fragmentTitleStack.push(getResources().getString(R.string.app_name));
+            mTitle.setText(getResources().getString(R.string.app_name));
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -191,8 +207,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);
         }
-        else
+        else if(!backProcessing)
         {
+            backProcessing = true;
             Fragment prevFragment = null;
             String title = null;
             if(!fragmentStack.isEmpty())
@@ -216,23 +233,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             toggle.syncState();
             if(title != null)
-                toolbar.setTitle(title);
+                mTitle.setText(title);
         }
+
+        if(searchOpen)
+        {
+            searchEditText.setVisibility(View.INVISIBLE);
+            searchEditText.setText("");
+            searchOpen = false;
+        }
+        backProcessing = false;
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        if (prevMenuItem == null)
-            prevMenuItem = menuItem;
         Fragment fragment = null;
         Class fragmentClass = null;
         switch(menuItem.getItemId()) {
             case R.id.nav_chats:
-                //TODO initialize fragment class to corresponding fragment class
                 fragmentClass = ChatsFragment.class;
                 break;
             case R.id.nav_contacts:
-                //TODO initialize fragment class to corresponding fragment class
                 if(readContacts != null) {
                     try {
                         readContacts.join();
@@ -243,46 +264,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentClass = ContactsFragment.class;
                 break;
             case R.id.nav_about_us:
-                //TODO initialize fragment class to corresponding fragment class
                 fragmentClass = AboutUsFragment.class;
                 break;
             default:
-                fragmentClass = ChatsFragment.class;
         }
         try {
             fragment = (Fragment) fragmentClass.newInstance();
+            if(fragment instanceof ContactsFragment)
+                ((ContactsFragment) fragment).setContacts(contacts);
+            else if(fragment instanceof ChatsFragment)
+                ((ChatsFragment)fragment).setChats(chats);
         } catch (Exception e) {
             e.printStackTrace();
         }
         String title = menuItem.getTitle() + "";
-        if(fragment instanceof ChatsFragment)
-        {
-            title = getResources().getString(R.string.app_name);
-            //TODO replace hamburger button with back arrow
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        else
-        {
 
-            //TODO replace back button to hamburger button
-
-        }
         // Insert the fragment by replacing any existing fragment
         if(!fragment.getClass().equals(fragmentStack.peek().getClass()))
         {
             fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
+            currentFragmet = fragment;
             fragmentTitleStack.push(title);
             Log.d("Fragment management", "Fragment Stack size:" + fragmentStack.size() );
             // Highlight the selected item has been done by NavigationView
-            prevMenuItem.setChecked(false);
+            if(prevMenuItem != null)
+                prevMenuItem.setChecked(false);
             menuItem.setChecked(true);
             // Set action bar title
-            setTitle(title);
+            mTitle.setText(title);
             // Close the navigation drawer
             drawerLayout.closeDrawers();
             prevMenuItem = menuItem;
+
+            searchEditText.setVisibility(View.INVISIBLE);
+            searchEditText.setText("");
+            searchOpen = false;
         }
 
 
@@ -301,20 +318,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         toggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search_button:
-                toolbar.setTitle("");
-                //toolbar.inflateMenu();
-                finish();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     public ActionBarDrawerToggle getToggle() {
@@ -343,6 +346,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }else {
             Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+        }
+
+        if(reqCode == IMG_FOR_SENDING)
+        {
+            if (resultCode == RESULT_OK) {
+                try {
+                    final Uri imageUri = data.getData();
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    selectedImage = getRoundedCornerBitmap(selectedImage, 100);
+                    String imageString = BitmapToString(selectedImage);
+                    //TODO Send it to the database
+
+                    ((ChatFragment)currentFragmet).setImageMessage(selectedImage);
+                    imageLoaded = true;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                }
+
+            }else {
+                Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public static String BitmapToString(Bitmap bitmap) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String temp = Base64.encodeToString(b, Base64.DEFAULT);
+            return temp;
+        } catch (NullPointerException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+    public static Bitmap StringToBitmap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch (NullPointerException e) {
+            e.getMessage();
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
         }
     }
 
@@ -434,6 +487,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    TextWatcher searchTextWatcher = new TextWatcher() {
+        Fragment fragment = null;
+        boolean once = false;
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(currentFragmet instanceof ContactsFragment)
+            {
+                contactsSearchResult = new ArrayList<>();
+                for (Contact contact : contacts) {
+                    if (contact.getContactName().toLowerCase().contains(s.toString().toLowerCase())
+                            || contact.getContactIdentifier().toLowerCase().contains(s.toString().toLowerCase()))
+                    {
+                        contactsSearchResult.add(contact);
+                    }
+                }
+
+                fragment = new ContactsFragment();
+                ((ContactsFragment)fragment).setContacts(contactsSearchResult);
+            }
+            else if(currentFragmet instanceof ChatsFragment)
+            {
+                chatsSearchResult = new ArrayList<>();
+                for (Chat chat : chats) {
+                    if(chat.getSender().getName().toLowerCase().contains(s.toString().toLowerCase()))
+                    {
+                        chatsSearchResult.add(chat);
+                    }
+                }
+                fragment = new ChatsFragment();
+                ((ChatsFragment)fragment).setChats(chatsSearchResult);
+            }
+
+            fragmentManager = getSupportFragmentManager();
+            if(fragmentManager != null && fragment != null)
+                fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
+
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (!once)
+            {
+                fragmentStack.push(fragment);
+                fragmentTitleStack.push(getResources().getString(R.string.search));
+                mTitle.setText(getResources().getString(R.string.search));
+                currentFragmet = fragment;
+                once = true;
+            }
+        }
+    };
+    //Change visible fragment
+    public static void addFragment(Fragment fragment, String title)
+    {
+        fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
+        fragmentStack.push(fragment);
+        fragmentTitleStack.push(title);
+        currentFragmet = fragment;
+        mTitle.setText(title);
+    }
 }
 
 
