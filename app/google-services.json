@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "872323651154-eth4i3jrg318smd79bneoop98viuj6g9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hamlet.mobileprogrammingclass_chat_project",
+            "certificate_hash": "cbc8223a56a8dafd2b1b857d71c97bd720cb937d"
+          }
+        },
+        {
           "client_id": "872323651154-e2cokds9e3hl6jjmb50dtgk4tj8rrlcu.apps.googleusercontent.com",
           "client_type": 3
         }
