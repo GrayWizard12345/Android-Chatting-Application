@@ -7,10 +7,10 @@
               android:orientation="vertical"
               tools:context=".activities.LoginActivity"
 
-    android:background="@drawable/back1">
+    android:background="@drawable/background1">
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/imageView_logo"
         android:layout_width="200dp"
         android:layout_height="123dp"
         android:scaleType="centerCrop"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:fontFamily="@font/montserrat"
-        android:text="Phone number"
+        android:text="Email"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
         android:textSize="20dp"
@@ -33,23 +33,24 @@
          />
 
     <EditText
-        android:id="@+id/editText_phoneNum"
+        android:id="@+id/editText_phoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="+998"
-        android:layout_marginTop="5dp"
-        android:inputType="phone"
-        android:textStyle="bold"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorWhite"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="20dp"
         android:backgroundTint="@color/colorWhite"
+        android:fontFamily="@font/montserrat"
+        android:hint="nozima.sb@gmail.com"
+        android:inputType="text"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhiteWithTransparency"
+        android:textStyle="bold"
         />
 
 
     <TextView
-        android:id="@+id/textView_password"
+        android:id="@+id/textView_passw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -64,33 +65,63 @@
         />
 
     <EditText
-        android:id="@+id/editText_password"
+        android:id="@+id/editText_passw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="******"
-        android:inputType="textPassword"
-        android:textStyle="bold"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorWhite"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:backgroundTint="@color/colorWhite"
-        />
+        android:fontFamily="@font/montserrat"
+        android:inputType="textPassword"
+        android:textColor="@color/colorWhite"
+
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/checkbox_passw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginLeft="15dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Show Password"
+        android:textColor="@color/colorWhite"
+        android:textSize="15dp"
+
+        android:textStyle="bold" />
+
 
     <ImageButton
+        android:id="@+id/imageButton_donebtn"
         android:layout_marginTop="10dp"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:scaleType="centerCrop"
-
         android:src="@drawable/done_btn"
-    android:background="@color/transparent"
+        android:background="@color/transparent"
+
         />
 
+    <TextView
+        android:id="@+id/linkToRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/montserrat"
+        android:text="No account yet? Create NOW!"
+        android:textColor="@color/red"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        />
+
+
     <pl.droidsonroids.gif.GifImageView
+
+        android:id="@+id/gif_fire"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/fire_gif"
+        android:scaleType="center"
 
         />
 

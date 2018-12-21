@@ -1,10 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.RegistrationActivity">
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        tools:context=".activities.LoginActivity"
 
-</android.support.constraint.ConstraintLayout>
+        android:background="@drawable/background2">
+
+    <ImageView
+        android:id="@+id/imageView_signUpLogo"
+        android:layout_width="200dp"
+        android:layout_height="123dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/signup_logo" />
+
+
+    <TextView
+        android:id="@+id/textView_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/montserrat"
+        android:text="Your Name"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <EditText
+        android:id="@+id/editText_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/black"
+        android:fontFamily="@font/montserrat"
+        android:hint="Nozimakhon"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/textView_phoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/montserrat"
+        android:text="Phone Number"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <EditText
+        android:id="@+id/editText_phoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/black"
+        android:fontFamily="@font/montserrat"
+        android:hint="+998909009090"
+        android:inputType="phone"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/textView_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/montserrat"
+        android:text="Email"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <EditText
+        android:id="@+id/editText_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/black"
+        android:fontFamily="@font/montserrat"
+        android:hint="nozima.sb@gmail.com"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+
+
+    <TextView
+        android:id="@+id/textView_passw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/montserrat"
+        android:text="Password"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <EditText
+        android:id="@+id/editText_passw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/black"
+        android:fontFamily="@font/montserrat"
+        android:inputType="textPassword"
+        android:hint="Password"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/checkbox_passw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginLeft="15dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Show Password"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+
+        android:textStyle="bold" />
+
+
+    <ImageButton
+        android:id="@+id/imageButton_donebtn"
+        android:layout_marginTop="10dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/done_btn"
+        android:background="@color/transparent"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/montserrat"
+        android:text="Done"
+        android:textColor="@color/red"
+        android:textStyle="bold" />
+
+
+
+
+    </LinearLayout>
