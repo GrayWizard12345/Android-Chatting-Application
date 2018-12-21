@@ -131,6 +131,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("name", auth.getCurrentUser().getDisplayName());
+                            intent.putExtra("phone", auth.getCurrentUser().getPhoneNumber());
+                            intent.putExtra("email", auth.getCurrentUser().getEmail());
                             startActivity(intent);
                             finish();
                         } else {

@@ -7,11 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
-import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class MessagesArrayAdapter extends ArrayAdapter {
     private List<Message> messages;
 
     public MessagesArrayAdapter(@NonNull Context context, List<Message> messages) {
-        super(context, R.layout.message_view_item);
+        super(context, R.layout.message_view_item_left);
         this.messages = messages;
     }
 
@@ -40,12 +39,19 @@ public class MessagesArrayAdapter extends ArrayAdapter {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).
-                    inflate(R.layout.message_view_item, parent, false);
+                    inflate(R.layout.message_view_item_left, parent, false);
         }
 
         holder.messageText = convertView.findViewById(R.id.message_text);
         holder.messageDate = convertView.findViewById(R.id.message_date);
         holder.setData(message.getText(), message.getDate());
+
+        if(message.getSender().equals(MainActivity.currentUser))
+        {
+            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+            holder.messageDate.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+        }
+
         return convertView;
     }
 

@@ -62,8 +62,8 @@ public class ContactsFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 //TODO check if this contact exists in our database
-                User user = new User(contacts.get(i).getContactIdentifier().hashCode(), contacts.get(i).getContactName(), contacts.get(i).getContactIdentifier());
-                Chat chat = new Chat(user.getId(), new ArrayList<Message>(), user, false, 0);
+                User user = new User(contacts.get(i).getContactName(), contacts.get(i).getContactIdentifier(), contacts.get(i).getContactIdentifier());
+                Chat chat = new Chat(user.getPhoneNumber(), new ArrayList<Message>(), user, false, 0);
 
                 //Todo save chat to database
 

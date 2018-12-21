@@ -31,9 +31,7 @@ public class DatabaseController {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        User receiver = new User(1, "Muslimbek", "+998909327598",null, "password");
 
-        databaseReference.child("users").child(receiver.getId() + "").setValue(receiver);
         return  user;
     }
 

@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.ApplicationUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -104,7 +105,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     assert firebaseUser != null;
                     String userid = firebaseUser.getUid();
 
-                    reference = FirebaseDatabase.getInstance().getReference("Users").child(name);
+                    reference = FirebaseDatabase.getInstance().getReference("Users").child(phoneNum);
 
                     HashMap<String, String> hashmap = new HashMap<>();
                     hashmap.put("name", name);
@@ -117,11 +118,15 @@ public class RegistrationActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.putExtra("name", name);
+                                intent.putExtra("phone", phoneNum);
+                                intent.putExtra("email", email);
                                 startActivity(intent);
                                 finish();
                             }
                         }
                     });
+
                 } else {
                     Toast.makeText(RegistrationActivity.this, "Not possible!", Toast.LENGTH_SHORT).show();
                 }

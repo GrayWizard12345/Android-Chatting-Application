@@ -1,15 +1,12 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ApplicationUser extends User {
-    public ApplicationUser(int id, String name, String email, String phoneNumber) {
-        super(id, name, phoneNumber);
+public class ApplicationUser extends User implements Serializable {
+    public ApplicationUser(String name, String email, String phoneNumber) {
+        super(name, email, phoneNumber);
     }
 
-    public ApplicationUser(int id, String name, String email) {
-        super(id, name);
-    }
-
-    public static ArrayList<Chat> chats;
+    public static final ArrayList<Chat> chats = new ArrayList<>();
 }

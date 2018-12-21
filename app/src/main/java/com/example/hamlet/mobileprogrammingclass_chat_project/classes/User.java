@@ -6,33 +6,40 @@ import android.graphics.drawable.Icon;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 
-public class User {
-    private int id;
+import java.io.Serializable;
+
+public class User  implements Serializable {
     private String name;
     private String phoneNumber;
     private Bitmap userIcon;
     private String password;
 
+    public User(String name, String phoneNumber, String email) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    private String email;
 
     public User() {
     }
 
-    public User(int id, String name) {
-        this.id = id;
+    public User(String name) {
         this.name = name;
 
     }
 
-    public User(int id, String name, String phoneNumber, Bitmap userIcon, String password) {
-        this.id = id;
+
+
+    public User(String name, String phoneNumber, Bitmap userIcon, String password) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.userIcon = userIcon;
         this.password = password;
     }
 
-    public User(int id, String name, String phoneNumber) {
-        this.id = id;
+    public User(String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
     }
@@ -45,13 +52,6 @@ public class User {
         this.password = password;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -78,5 +78,13 @@ public class User {
 
     public void setUserIcon(Bitmap userIcon) {
         this.userIcon = userIcon;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

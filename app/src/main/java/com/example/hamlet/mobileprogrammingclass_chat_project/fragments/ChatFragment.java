@@ -20,8 +20,10 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainAct
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
 
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
@@ -62,9 +64,8 @@ public class ChatFragment extends Fragment {
             public void onClick(View view) {
 
                 //TODO ACTION CLICK LISTENER FOR SEND BUTTON
-                LocalDateTime time = LocalDateTime.now();
-                time.format(DateTimeFormatter.BASIC_ISO_DATE);
-                String messageSendTime = time.toString();
+                long time = new Date().getTime();
+                String messageSendTime = (String) android.text.format.DateFormat.format("dd-MM-yyyy (HH:mm:ss)", time);
                 String messageText = inputText.getText() + "";
                 Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, null);
                 messages.add(message);

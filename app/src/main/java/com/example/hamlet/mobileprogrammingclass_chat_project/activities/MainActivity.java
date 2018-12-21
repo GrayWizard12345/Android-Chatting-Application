@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationMenu;
     private static int RESULT_LOAD_IMG;
     public static int IMG_FOR_SENDING = 666;
-    public static ApplicationUser currentUser = new ApplicationUser(1, "Muslimbek", "+998909327598");
+    public static ApplicationUser currentUser;
     public static ArrayList<Contact> contacts = new ArrayList<>();
     public static ArrayList<Chat> chats = new ArrayList<>();
 
@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String name = getIntent().getStringExtra("name");
+        String phone = getIntent().getStringExtra("phone");
+        String email = getIntent().getStringExtra("email");
+        currentUser = new ApplicationUser(name, email, phone);
         mainActivityContext = this;
 
         fragmentStack = new Stack<>();
@@ -132,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(savedInstanceState==null){
             navigationMenu.setNavigationItemSelectedListener(this);
             navigationMenu.setCheckedItem(R.id.nav_chats);
-            navigationMenu.getMenu().getItem(0).setChecked(true);
         }
 
         toolbar =  findViewById(R.id.toolbar);

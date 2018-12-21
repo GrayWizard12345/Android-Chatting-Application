@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Chat {
 
-    private int chatId;
+    private String chatId;
     private ArrayList<Message> messages;
     private User sender;
     private User receiver;
@@ -12,7 +12,7 @@ public class Chat {
     private int unreadMessagesCounter;
 
 
-    public Chat(int chatId, ArrayList<Message> messages, User sender, boolean unread, int unreadMessagesCounter) {
+    public Chat(String chatId, ArrayList<Message> messages, User sender, boolean unread, int unreadMessagesCounter) {
         this.chatId = chatId;
         this.messages = messages;
         this.sender = sender;
@@ -28,11 +28,11 @@ public class Chat {
         this.sender = sender;
     }
 
-    public int getChatId() {
+    public String getChatId() {
         return chatId;
     }
 
-    public void setChatId(int chatId) {
+    public void setChatId(String chatId) {
         this.chatId = chatId;
     }
 
