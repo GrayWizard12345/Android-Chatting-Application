@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
+import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
@@ -23,6 +24,8 @@ public class ChatsFragment extends Fragment {
     private ChatsArrayAdapter arrayAdapter;
     private List<Chat> chats;
 
+    static ChatFragment fragment;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,26 +38,31 @@ public class ChatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        chats = new ArrayList<>();
-        User receiver = new User(1, "Muslimbek", "+998909327598");
-        User sender = new User(0, "ChatterBoxSupport", "+998909327598");
-
-        ArrayList<Message> messages = new ArrayList<Message>();
-        messages.add(new Message("Hello world", "12.12.12", sender, receiver));
-        Chat chat = new Chat(0, messages, receiver, false, 0);
-        chats.add(chat);
         chatsListView = view.findViewById(R.id.chats_list_view);
         arrayAdapter = new ChatsArrayAdapter(getContext(), chats);
         chatsListView.setAdapter(arrayAdapter);
+
+
+
+
         chatsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Chat chat = chats.get(i);
-                ChatFragment fragment = new ChatFragment();
+                fragment = new ChatFragment();
+                fragment.setMessages(chat.getMessages());
+                MainActivity.addFragment(fragment, chat.getSender().getName());
             }
         });
     }
 
 
+    public List<Chat> getChats() {
+        return chats;
+    }
+
+    public void setChats(List<Chat> chats) {
+        this.chats = chats;
+    }
 
 }

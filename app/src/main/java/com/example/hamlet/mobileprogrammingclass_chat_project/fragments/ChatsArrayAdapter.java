@@ -1,6 +1,7 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -65,12 +66,21 @@ public class ChatsArrayAdapter extends ArrayAdapter {
         TextView chatLastMessageTextView;
         Button messageCounterButton;
 
-        void setData(Icon image, String name, String lastMessage, int counter) {
+        void setData(Bitmap image, String name, String lastMessage, int counter) {
 
             contactNameTextView.setText(name);
             chatLastMessageTextView.setText(lastMessage);
-            messageCounterButton.setText(String.valueOf(counter));
+            if(counter != 0)
+            {
+                messageCounterButton.setText(String.valueOf(counter));
+                messageCounterButton.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                messageCounterButton.setVisibility(View.INVISIBLE);
+            }
 
+            contactImageView.setImageBitmap(image);
            /* if (image != null) {
 
                 //contactImageView.setImageResource(image.);

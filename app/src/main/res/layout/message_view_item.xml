@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:maxEms="12"/>
+        android:maxEms="12"
+        android:linksClickable="true"
+        />
 
     <TextView
         android:id="@+id/message_date"

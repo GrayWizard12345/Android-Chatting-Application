@@ -18,18 +18,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:padding="2dp"
         android:background="@drawable/shape_fancy_layout">
 
         <EditText
             android:id="@+id/input_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"/>
+            android:layout_weight="9"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            />
 
         <ImageButton
-            android:id="@+id/send_button"
+            android:id="@+id/send_text_button"
             android:text="->"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,7 +38,19 @@
             android:layout_weight="1"
             android:src="@drawable/ic_send_black_24dp"
             android:background="@color/transparent"
+            android:layout_marginEnd="10dp"
         />
+        <ImageButton
+            android:id="@+id/send_image_button"
+            android:text="->"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:layout_weight="1"
+            android:src="@drawable/button_image_24dp"
+            android:background="@color/transparent"
+            android:layout_marginEnd= "20dp"
+            />
 
     </LinearLayout>
 

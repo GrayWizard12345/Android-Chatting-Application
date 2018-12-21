@@ -1,16 +1,20 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
+import android.graphics.Bitmap;
+
 public class Message {
 
     private String text;
     private String date;
     private User sender;
     private User receiver;
-    public Message(String text, String date, User sender, User receiver) {
+    private Bitmap imageMessage;
+    public Message(String text, String date, User sender, User receiver, Bitmap imageMessage) {
         this.text = text;
         this.date = date;
         this.sender = sender;
         this.receiver = receiver;
+        this.imageMessage = imageMessage;
     }
 
 
@@ -45,5 +49,13 @@ public class Message {
 
     public User getReceiver() {
         return receiver;
+    }
+
+    public Bitmap getImageMessage() {
+        return imageMessage;
+    }
+
+    public void setImageMessage(Bitmap imageMessage) {
+        this.imageMessage = imageMessage;
     }
 }
