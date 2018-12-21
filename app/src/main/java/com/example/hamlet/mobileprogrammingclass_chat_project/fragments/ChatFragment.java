@@ -3,6 +3,8 @@ package com.example.hamlet.mobileprogrammingclass_chat_project.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,19 +14,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.BitmapToString;
+import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.IMG_FOR_SENDING;
+import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.getRoundedCornerBitmap;
 
 public class ChatFragment extends Fragment {
 
@@ -36,6 +47,8 @@ public class ChatFragment extends Fragment {
     private ImageButton sendImageButton;
     private User otherEnd;
     private Bitmap imageMessage;
+    private ImageView messageImage;
+    private static boolean imageLoaded = false;
 
     @Nullable
     @Override
@@ -57,8 +70,7 @@ public class ChatFragment extends Fragment {
         inputText = view.findViewById(R.id.input_text);
         sendButton = view.findViewById(R.id.send_text_button);
         sendImageButton = view.findViewById(R.id.send_image_button);
-
-
+        messageImage = view.findViewById(R.id.message_image);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,11 +93,17 @@ public class ChatFragment extends Fragment {
 
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, MainActivity.IMG_FOR_SENDING);
+                startActivityForResult(photoPickerIntent, IMG_FOR_SENDING);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        while (!MainActivity.imageLoaded)
+
+                        String messageSendTime = "";
+                        String messageText = "";
+                        Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, imageMessage);
+                        messages.add(message);
+                        messagesListView.postInvalidate();
+                        while (!imageLoaded)
                         {
                             try {
                                 Thread.sleep(20);
@@ -93,7 +111,14 @@ public class ChatFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }
+                        imageLoaded = false;
 
+                        long time = new Date().getTime();
+                        messageSendTime = (String) android.text.format.DateFormat.format("dd-MM-yyyy (HH:mm:ss)", time);
+                        imageMessage = Bitmap.createScaledBitmap(imageMessage, 240, 320, true);
+                        message.setDate(messageSendTime);
+                        message.setImageMessage(imageMessage);
+                        messagesListView.postInvalidate();
 
 
                     }
@@ -107,11 +132,14 @@ public class ChatFragment extends Fragment {
     {
         TextView messageText;
         TextView messageTextTime;
+        ImageView messageImage;
         for (Message message: messages) {
              messageText = new TextView(context);
              messageTextTime = new TextView(context);
+             messageImage = new ImageView(context);
              messageText.setText(message.getText());
              messageTextTime.setText(message.getDate());
+             messageImage.setImageBitmap(message.getImageMessage());
 
         }
     }
@@ -134,5 +162,32 @@ public class ChatFragment extends Fragment {
 
     public void setImageMessage(Bitmap imageMessage) {
         this.imageMessage = imageMessage;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == IMG_FOR_SENDING)
+        {
+            if (resultCode == RESULT_OK) {
+                try {
+                    final Uri imageUri = data.getData();
+                    final InputStream imageStream = MainActivity.mainActivityContext.getContentResolver().openInputStream(imageUri);
+                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    selectedImage = getRoundedCornerBitmap(selectedImage, 100);
+                    String imageString = BitmapToString(selectedImage);
+                    imageMessage = selectedImage;
+                    //TODO Send it to the database
+                    imageLoaded = true;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.mainActivityContext, "Something went wrong", Toast.LENGTH_LONG).show();
+                }
+
+            }else {
+                Toast.makeText(MainActivity.mainActivityContext, "You haven't picked Image",Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

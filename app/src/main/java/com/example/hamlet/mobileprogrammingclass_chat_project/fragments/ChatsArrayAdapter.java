@@ -50,9 +50,12 @@ public class ChatsArrayAdapter extends ArrayAdapter {
         holder.contactNameTextView = convertView.findViewById(R.id.user_name);
         holder.chatLastMessageTextView = convertView.findViewById(R.id.last_message);
         holder.messageCounterButton = convertView.findViewById(R.id.unread_message_counter);
-        String lastMessage = " ";
+        String lastMessage = "";
         if(!chat.getMessages().isEmpty())
-            lastMessage = chat.getMessages().get(chat.getMessages().size() - 1).getText();
+            lastMessage = chat.getMessages().get(chat.getMessages().size() - 1).getSender().getName() +
+                    ":" + chat.getMessages().get(chat.getMessages().size() - 1).getText();
+        if(chat.getMessages().get(chat.getMessages().size() - 1).getText() == null)
+            lastMessage += "image";
         holder.setData(chat.getSender().getUserIcon(),
                 chat.getSender().getName(), lastMessage,
                 chat.getUnreadMessagesCounter());

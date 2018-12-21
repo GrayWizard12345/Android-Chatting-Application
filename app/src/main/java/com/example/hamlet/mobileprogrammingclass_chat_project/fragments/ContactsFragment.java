@@ -10,7 +10,9 @@ import android.support.v4.app.Fragment;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.hamlet.mobileprogrammingclass_chat_project.Database.DatabaseController;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
@@ -61,16 +63,30 @@ public class ContactsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                //TODO check if this contact exists in our database
+                boolean notFound = true;
                 User user = new User(contacts.get(i).getContactName(), contacts.get(i).getContactIdentifier(), contacts.get(i).getContactIdentifier());
-                Chat chat = new Chat(user.getPhoneNumber(), new ArrayList<Message>(), user, false, 0);
+                for (User exsUser :DatabaseController.existingUsers) {
+                    if(exsUser.getPhoneNumber().equals(user.getPhoneNumber()))
+                    {
+                        user = exsUser;
+                        Chat chat = new Chat(user.getPhoneNumber(), new ArrayList<Message>(), user, MainActivity.currentUser, false, 0);
 
-                //Todo save chat to database
+                        //save chat to database
+                        DatabaseController.saveChat(chat);
+                        MainActivity.chats.add(chat);
+                        MainActivity.currentUser.getChatIds().add(chat.getChatId());
+                        DatabaseController.saveChatIds(MainActivity.currentUser);
+                        DatabaseController.saveChatIds(user);
+                        chatFragment = new ChatFragment();
+                        chatFragment.setMessages(chat.getMessages());
+                        MainActivity.addFragment(chatFragment, user.getName());
+                        notFound = false;
+                        break;
+                    }
+                }
+                if(notFound)
+                    Toast.makeText(MainActivity.mainActivityContext, "This user does not have account in our System!", Toast.LENGTH_LONG).show();
 
-                MainActivity.chats.add(chat);
-                chatFragment = new ChatFragment();
-                chatFragment.setMessages(chat.getMessages());
-                MainActivity.addFragment(chatFragment, user.getName());
             }
         });
     }

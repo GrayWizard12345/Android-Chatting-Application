@@ -1,23 +1,25 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.classes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Chat {
 
     private String chatId;
-    private ArrayList<Message> messages;
+    private List<Message> messages;
     private User sender;
     private User receiver;
     private boolean unread;
     private int unreadMessagesCounter;
 
 
-    public Chat(String chatId, ArrayList<Message> messages, User sender, boolean unread, int unreadMessagesCounter) {
+    public Chat(String chatId, ArrayList<Message> messages, User sender, User receiver, boolean unread, int unreadMessagesCounter) {
         this.chatId = chatId;
         this.messages = messages;
         this.sender = sender;
         this.unread = unread;
         this.unreadMessagesCounter = unreadMessagesCounter;
+        this.receiver = receiver;
     }
 
     public User getSender() {
@@ -36,7 +38,7 @@ public class Chat {
         this.chatId = chatId;
     }
 
-    public ArrayList<Message> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 

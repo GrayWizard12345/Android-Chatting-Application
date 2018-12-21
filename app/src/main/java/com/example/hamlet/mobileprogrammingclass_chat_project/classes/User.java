@@ -7,17 +7,21 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User  implements Serializable {
     private String name;
     private String phoneNumber;
     private Bitmap userIcon;
     private String password;
+    private List<String> chatIds;
 
     public User(String name, String phoneNumber, String email) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        chatIds = new ArrayList<>();
     }
 
     private String email;
@@ -86,5 +90,13 @@ public class User  implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getChatIds() {
+        return chatIds;
+    }
+
+    public void setChatIds(List<String> chatIds) {
+        this.chatIds = chatIds;
     }
 }

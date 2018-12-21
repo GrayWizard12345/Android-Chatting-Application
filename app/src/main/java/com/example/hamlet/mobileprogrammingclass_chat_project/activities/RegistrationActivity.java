@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -103,14 +104,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     assert firebaseUser != null;
-                    String userid = firebaseUser.getUid();
-
-                    reference = FirebaseDatabase.getInstance().getReference("Users").child(phoneNum);
+                    final String id = email.replaceAll("\\.", "");
+                    reference = FirebaseDatabase.getInstance().getReference("Users").child(id);
 
                     HashMap<String, String> hashmap = new HashMap<>();
                     hashmap.put("name", name);
                     hashmap.put("phoneNum", phoneNum);
                     hashmap.put("email", email);
+                    hashmap.put("image", "");
+
+                    reference.child("chatIds").setValue(new ArrayList<String>());
 
                     reference.setValue(hashmap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -118,9 +121,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.putExtra("name", name);
-                                intent.putExtra("phone", phoneNum);
-                                intent.putExtra("email", email);
+                                intent.putExtra("id", id);
                                 startActivity(intent);
                                 finish();
                             }

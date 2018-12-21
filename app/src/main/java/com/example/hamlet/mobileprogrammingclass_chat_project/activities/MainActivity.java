@@ -35,23 +35,21 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hamlet.mobileprogrammingclass_chat_project.Database.DatabaseController;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.ApplicationUser;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Contact;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.AboutUsFragment;
-import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 
@@ -68,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static DrawerLayout drawerLayout;
     public static Toolbar toolbar;
     public static boolean searchOpen = false;
-    private NavigationView navigationMenu;
-    private static int RESULT_LOAD_IMG;
+    public static NavigationView navigationMenu;
+    public static int RESULT_LOAD_IMG;
     public static int IMG_FOR_SENDING = 666;
     public static ApplicationUser currentUser;
     public static ArrayList<Contact> contacts = new ArrayList<>();
@@ -82,29 +80,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle toggle;
     protected static ActionBar actionBar;
     static MenuItem prevMenuItem;
-    private ImageButton profileIcon;
-    private TextView userName;
+    public static ImageButton profileIcon;
+    public static TextView userName;
     private static  Thread readContacts;
     public static MainActivity mainActivityContext;
-    private static Fragment currentFragmet;
+    public static Fragment currentFragment;
     public static ArrayList<Contact> contactsSearchResult;
     public static ArrayList<Chat> chatsSearchResult;
     public static ImageButton searchButton;
     public static EditText searchEditText;
     public static TextView mTitle;
     public static boolean backProcessing = false;
-    public static boolean imageLoaded = false;
+    public static String id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String name = getIntent().getStringExtra("name");
-        String phone = getIntent().getStringExtra("phone");
-        String email = getIntent().getStringExtra("email");
-        currentUser = new ApplicationUser(name, email, phone);
+        id = getIntent().getStringExtra("id");
+        Log.d("User event", "UserID:" + id);
         mainActivityContext = this;
-
         fragmentStack = new Stack<>();
         fragmentTitleStack = new Stack<>();
         fragmentManager = getSupportFragmentManager();
@@ -119,7 +115,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         readContacts.start();
 
+        DatabaseController.initCurrentUser(id);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true)
+                {
+                    if(MainActivity.currentUser != null)
+                    {
+                        Log.d("UserNotNull", "User:" + MainActivity.currentUser);
+                        DatabaseController.getChats();
+                        DatabaseController.getUsers();
+                        break;
+                    }else {
+                        try {
+                            Log.d("ThreadWiat", "User:" + MainActivity.currentUser);
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }).start();
+
         initViews(savedInstanceState);
+
 
 
     }
@@ -178,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Class fragmentClass = ChatsFragment.class;
         try {
             Fragment fragment = (Fragment) fragmentClass.newInstance();
+            currentFragment = fragment;
             ((ChatsFragment)fragment).setChats(chats);
             fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
@@ -189,19 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-        profileIcon = navigationMenu.getHeaderView(0).findViewById(R.id.current_profile_icon);
-        profileIcon.setSoundEffectsEnabled(true);
-        profileIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
-            }
-        });
 
-        userName = navigationMenu.getHeaderView(0).findViewById(R.id.account_name);
-        userName.setText(currentUser.getName());
 
     }
 
@@ -282,18 +292,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         String title = menuItem.getTitle() + "";
 
+        // Highlight the selected item has been done by NavigationView
+        if(prevMenuItem != null)
+            prevMenuItem.setChecked(false);
+        menuItem.setChecked(true);
+
         // Insert the fragment by replacing any existing fragment
         if(!fragment.getClass().equals(fragmentStack.peek().getClass()))
         {
             fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
-            currentFragmet = fragment;
+            currentFragment = fragment;
             fragmentTitleStack.push(title);
             Log.d("Fragment management", "Fragment Stack size:" + fragmentStack.size() );
-            // Highlight the selected item has been done by NavigationView
-            if(prevMenuItem != null)
-                prevMenuItem.setChecked(false);
-            menuItem.setChecked(true);
+
             // Set action bar title
             mTitle.setText(title);
             // Close the navigation drawer
@@ -342,37 +354,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 profileIcon.setImageBitmap(selectedImage);
                 profileIcon.setBackground(getResources().getDrawable(R.color.transparent));
                 profileIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                DatabaseController.putImageToUserProfile(selectedImage);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
-        }else {
+        }
+        else if(resultCode == IMG_FOR_SENDING)
+        {
+            currentFragment.onActivityResult(reqCode, resultCode, data);
+        }else
+        {
             Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
 
-        if(reqCode == IMG_FOR_SENDING)
-        {
-            if (resultCode == RESULT_OK) {
-                try {
-                    final Uri imageUri = data.getData();
-                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                    selectedImage = getRoundedCornerBitmap(selectedImage, 100);
-                    String imageString = BitmapToString(selectedImage);
-                    //TODO Send it to the database
 
-                    ((ChatFragment)currentFragmet).setImageMessage(selectedImage);
-                    imageLoaded = true;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
-                }
-
-            }else {
-                Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     public static String BitmapToString(Bitmap bitmap) {
@@ -500,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(currentFragmet instanceof ContactsFragment)
+            if(currentFragment instanceof ContactsFragment)
             {
                 contactsSearchResult = new ArrayList<>();
                 for (Contact contact : contacts) {
@@ -514,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new ContactsFragment();
                 ((ContactsFragment)fragment).setContacts(contactsSearchResult);
             }
-            else if(currentFragmet instanceof ChatsFragment)
+            else if(currentFragment instanceof ChatsFragment)
             {
                 chatsSearchResult = new ArrayList<>();
                 for (Chat chat : chats) {
@@ -541,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentStack.push(fragment);
                 fragmentTitleStack.push(getResources().getString(R.string.search));
                 mTitle.setText(getResources().getString(R.string.search));
-                currentFragmet = fragment;
+                currentFragment = fragment;
                 once = true;
             }
         }
@@ -552,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
         fragmentStack.push(fragment);
         fragmentTitleStack.push(title);
-        currentFragmet = fragment;
+        currentFragment = fragment;
         mTitle.setText(title);
     }
 }

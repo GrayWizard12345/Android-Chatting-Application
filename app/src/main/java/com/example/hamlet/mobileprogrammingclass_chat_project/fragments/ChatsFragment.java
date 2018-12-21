@@ -20,6 +20,14 @@ import java.util.List;
 
 public class ChatsFragment extends Fragment {
 
+    public ListView getChatsListView() {
+        return chatsListView;
+    }
+
+    public void setChatsListView(ListView chatsListView) {
+        this.chatsListView = chatsListView;
+    }
+
     private ListView chatsListView;
     private ChatsArrayAdapter arrayAdapter;
     private List<Chat> chats;
@@ -49,6 +57,8 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Chat chat = chats.get(i);
+                chat.setUnread(false);
+                chat.setUnreadMessagesCounter(0);
                 fragment = new ChatFragment();
                 fragment.setMessages(chat.getMessages());
                 MainActivity.addFragment(fragment, chat.getSender().getName());

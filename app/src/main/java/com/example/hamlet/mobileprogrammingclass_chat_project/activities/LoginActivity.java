@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -22,6 +23,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,11 +46,16 @@ import java.util.List;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -118,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
     View.OnClickListener myListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String phoneNum = editText_phoneNum.getText().toString();
+            final String phoneNum = editText_phoneNum.getText().toString();
             String password = editText_password.getText().toString();
 
             if (TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(password)) {
@@ -129,11 +136,14 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
+                            FirebaseUser firebaseUser = auth.getCurrentUser();
+                            String email = firebaseUser.getEmail();
+                            String id = email.replaceAll("\\.", "");
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("name", auth.getCurrentUser().getDisplayName());
-                            intent.putExtra("phone", auth.getCurrentUser().getPhoneNumber());
-                            intent.putExtra("email", auth.getCurrentUser().getEmail());
+                            intent.putExtra("id", id);
                             startActivity(intent);
                             finish();
                         } else {
