@@ -34,6 +34,7 @@
             android:maxEms="12"
             android:linksClickable="true"
             android:textAlignment="center"
+            android:autoLink="all"
             />
 
         <TextView

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".fragments.ChatFragment"
-    android:orientation="vertical"
     android:id="@+id/fragment_chat"
     >
 
@@ -12,13 +11,13 @@
     <ListView
         android:id="@+id/messages_list_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="false"
         android:dividerHeight="0dp"
         android:divider="@color/colorWhite"
         android:windowSoftInputMode="adjustResize"
-        android:layout_weight="99"
+        android:layout_alignParentTop="true"
         >
 
     </ListView>
@@ -26,16 +25,16 @@
     <LinearLayout
         android:id="@+id/input_feild"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="1"
-        android:background="@drawable/shape_fancy_layout">
+        android:background="@drawable/shape_fancy_layout"
+        android:layout_alignParentBottom="true"
+        >
 
         <EditText
             android:id="@+id/input_text"
-            android:layout_width="0dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             />
@@ -43,10 +42,9 @@
         <ImageButton
             android:id="@+id/send_text_button"
             android:text="->"
-            android:layout_width="0dp"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
-            android:layout_weight="1"
             android:src="@drawable/ic_send_black_24dp"
             android:background="@color/transparent"
             android:layout_marginEnd="10dp"
@@ -54,10 +52,9 @@
         <ImageButton
             android:id="@+id/send_image_button"
             android:text="->"
-            android:layout_width="0dp"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
-            android:layout_weight="1"
             android:src="@drawable/button_image_24dp"
             android:background="@color/transparent"
             android:layout_marginEnd= "20dp"
@@ -65,4 +62,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

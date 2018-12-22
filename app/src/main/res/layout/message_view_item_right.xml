@@ -33,6 +33,7 @@
             android:paddingStart="8dp"
             android:maxEms="12"
             android:linksClickable="true"
+            android:autoLink="all"
             android:textAlignment="center"
             />
 
