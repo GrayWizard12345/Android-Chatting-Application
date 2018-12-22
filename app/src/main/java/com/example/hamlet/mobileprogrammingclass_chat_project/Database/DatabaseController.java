@@ -82,7 +82,7 @@ public class DatabaseController {
                     Log.d("Database event","Existing users phoneNumber " + u.getPhoneNumber());
                 }
                 Log.d("Database event","Existing users loaded. Size:" + existingUsers.size());
-                usersRef.removeEventListener(this);
+//                usersRef.removeEventListener(this);
             }
 
             @Override
