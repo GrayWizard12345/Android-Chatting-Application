@@ -13,12 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hamlet.mobileprogrammingclass_chat_project.Database.DatabaseController;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
@@ -29,6 +32,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,13 +45,15 @@ public class ChatFragment extends Fragment {
 
     private ListView messagesListView;
     private MessagesArrayAdapter arrayAdapter;
-    private List<Message> messages;
+    private ArrayList<Message> messages;
     private EditText inputText;
     private ImageButton sendButton;
     private ImageButton sendImageButton;
     private User otherEnd;
     private Bitmap imageMessage;
     private ImageView messageImage;
+    private String chatId;
+
     private static boolean imageLoaded = false;
 
     @Nullable
@@ -71,18 +77,37 @@ public class ChatFragment extends Fragment {
         sendButton = view.findViewById(R.id.send_text_button);
         sendImageButton = view.findViewById(R.id.send_image_button);
         messageImage = view.findViewById(R.id.message_image);
+
+
+
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //TODO ACTION CLICK LISTENER FOR SEND BUTTON
+                //ACTION CLICK LISTENER FOR SEND BUTTON
+
                 long time = new Date().getTime();
                 String messageSendTime = (String) android.text.format.DateFormat.format("dd-MM-yyyy (HH:mm:ss)", time);
                 String messageText = inputText.getText() + "";
-                Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, null);
+                final Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, null);
                 messages.add(message);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DatabaseController.saveSingleMessage(chatId, message);
+                    }
+                }).start();
+                arrayAdapter.notifyDataSetChanged();
                 messagesListView.invalidateViews();
                 inputText.setText("");
+                messagesListView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Select the last row so it will scroll into view...
+                        messagesListView.setSelection(arrayAdapter.getCount() - 1);
+                    }
+                });
 
             }
         });
@@ -100,7 +125,7 @@ public class ChatFragment extends Fragment {
 
                         String messageSendTime = "";
                         String messageText = "";
-                        Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, imageMessage);
+                        final Message message = new Message(messageText, messageSendTime, MainActivity.currentUser, otherEnd, imageMessage);
                         messages.add(message);
                         messagesListView.postInvalidate();
                         while (!imageLoaded)
@@ -118,7 +143,21 @@ public class ChatFragment extends Fragment {
                         imageMessage = Bitmap.createScaledBitmap(imageMessage, 240, 320, true);
                         message.setDate(messageSendTime);
                         message.setImageMessage(imageMessage);
+                        arrayAdapter.notifyDataSetChanged();
                         messagesListView.postInvalidate();
+                        messagesListView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Select the last row so it will scroll into view...
+                                messagesListView.setSelection(arrayAdapter.getCount() - 1);
+                            }
+                        });
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                DatabaseController.saveSingleMessage(chatId, message);
+                            }
+                        }).start();
 
 
                     }
@@ -142,9 +181,16 @@ public class ChatFragment extends Fragment {
              messageImage.setImageBitmap(message.getImageMessage());
 
         }
+        messagesListView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                messagesListView.setSelection(arrayAdapter.getCount() - 1);
+            }
+        });
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
     }
 
@@ -176,7 +222,6 @@ public class ChatFragment extends Fragment {
                     final InputStream imageStream = MainActivity.mainActivityContext.getContentResolver().openInputStream(imageUri);
                     Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     selectedImage = getRoundedCornerBitmap(selectedImage, 100);
-                    String imageString = BitmapToString(selectedImage);
                     imageMessage = selectedImage;
                     //TODO Send it to the database
                     imageLoaded = true;
@@ -189,5 +234,13 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(MainActivity.mainActivityContext, "You haven't picked Image",Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }

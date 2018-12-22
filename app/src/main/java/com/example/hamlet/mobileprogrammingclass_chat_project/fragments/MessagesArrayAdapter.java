@@ -39,25 +39,20 @@ public class MessagesArrayAdapter extends ArrayAdapter {
         MessagesArrayAdapter.MessageViewHolder holder = new MessagesArrayAdapter.MessageViewHolder();
         Message message = messages.get(position);
 
-        if (convertView == null) {
-            if(message.getSender().getPhoneNumber().equals(MainActivity.currentUser.getPhoneNumber()))
-                convertView = LayoutInflater.from(getContext()).
-                        inflate(R.layout.message_view_item_right, parent, false);
-            else
-                convertView = LayoutInflater.from(getContext()).
-                        inflate(R.layout.message_view_item_left, parent, false);
-        }
+
+        if(message.getSender().getPhoneNumber().equals(MainActivity.currentUser.getPhoneNumber()))
+            convertView = LayoutInflater.from(getContext()).
+                    inflate(R.layout.message_view_item_right, parent, false);
+        else
+            convertView = LayoutInflater.from(getContext()).
+                    inflate(R.layout.message_view_item_left, parent, false);
+
 
         holder.messageText = convertView.findViewById(R.id.message_text);
         holder.messageDate = convertView.findViewById(R.id.message_date);
         holder.imageView = convertView.findViewById(R.id.message_image);
         holder.setData(message.getText(), message.getDate(), message.getImageMessage());
 
-        if(message.getSender().equals(MainActivity.currentUser))
-        {
-            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-            holder.messageDate.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-        }
 
         return convertView;
     }

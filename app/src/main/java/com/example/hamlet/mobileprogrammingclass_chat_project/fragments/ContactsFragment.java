@@ -68,6 +68,8 @@ public class ContactsFragment extends Fragment {
                     {
                         chatFragment = new ChatFragment();
                         chatFragment.setMessages(chat.getMessages());
+                        chatFragment.setOtherEnd(chat.getSender());
+                        chatFragment.setChatId(chat.getChatId());
                         MainActivity.addFragment(chatFragment, user.getName(), MainActivity.CHAT_FRAGMENT_TYPE);
                         return;
                     }
@@ -76,16 +78,18 @@ public class ContactsFragment extends Fragment {
                     if(exsUser.getPhoneNumber().equals(user.getPhoneNumber()))
                     {
                         user = exsUser;
-                        Chat chat = new Chat(user.getPhoneNumber(), new ArrayList<Message>(), user, MainActivity.currentUser, false, 0);
+                        Chat chat = new Chat(user.getEmail().replaceAll("\\.", ""), new ArrayList<Message>(), user, MainActivity.currentUser, false, 0);
                         //save chat to database
                         DatabaseController.saveChat(chat);
-                        MainActivity.chats.add(chat);
+//                        MainActivity.chats.add(chat);
                         MainActivity.currentUser.getChatIds().add(chat.getChatId());
                         user.getChatIds().add(chat.getChatId());
                         DatabaseController.saveChatIds(MainActivity.currentUser);
                         DatabaseController.saveChatIds(user);
                         chatFragment = new ChatFragment();
                         chatFragment.setMessages(chat.getMessages());
+                        chatFragment.setChatId(chat.getChatId());
+                        chatFragment.setOtherEnd(chat.getSender());
                         MainActivity.addFragment(chatFragment, user.getName(), MainActivity.CHAT_FRAGMENT_TYPE);
                         notFound = false;
                         break;

@@ -6,7 +6,7 @@ import java.util.List;
 public class Chat {
 
     private String chatId;
-    private List<Message> messages;
+    private ArrayList<Message> messages;
     private User sender;
     private User receiver;
     private boolean unread;
@@ -38,7 +38,7 @@ public class Chat {
         this.chatId = chatId;
     }
 
-    public List<Message> getMessages() {
+    public ArrayList<Message> getMessages() {
         return messages;
     }
 

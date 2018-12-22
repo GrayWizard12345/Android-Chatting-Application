@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -15,22 +15,23 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Applicatio
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
+import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatFragment;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
-import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
+import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.BitmapToString;
 import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.RESULT_LOAD_IMG;
+import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.StringToBitmap;
 import static com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity.navigationMenu;
 
 public class DatabaseController {
@@ -51,8 +52,8 @@ public class DatabaseController {
     public static void getUsers()
     {
         database = FirebaseDatabase.getInstance();
-        DatabaseReference usersRef = database.getReference("Users");
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference usersRef = database.getReference("Users");
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 existingUsers = new ArrayList<>();
@@ -81,6 +82,7 @@ public class DatabaseController {
                     Log.d("Database event","Existing users phoneNumber " + u.getPhoneNumber());
                 }
                 Log.d("Database event","Existing users loaded. Size:" + existingUsers.size());
+                usersRef.removeEventListener(this);
             }
 
             @Override
@@ -106,10 +108,10 @@ public class DatabaseController {
     }
 
 
-    public static void initCurrentUser(String id)
+    public static void initCurrentUser(final String id)
     {
         database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference("Users");
+        final DatabaseReference reference = database.getReference("Users");
 
         reference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -146,7 +148,7 @@ public class DatabaseController {
                 MainActivity.userName.setText(MainActivity.currentUser.getName());
 
 
-
+                reference.child(id).removeEventListener(this);
             }
 
             @Override
@@ -201,7 +203,7 @@ public class DatabaseController {
         userRef = usersRef.child(MainActivity.id);
 
         DatabaseReference chatIds = userRef.child("chatIds");
-        chatIds.addListenerForSingleValueEvent(new ValueEventListener() {
+        chatIds.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<String> chatids = new ArrayList<>();;
@@ -210,17 +212,16 @@ public class DatabaseController {
                 }
                 MainActivity.currentUser.setChatIds(chatids);
                 Log.d("Database event","Chat ids loaded. Size:" + chatids.size());
-                Log.d("Database event","Chat ids loaded. Chat:" + chatids.get(0));
-                Log.d("Database event","Chat ids loaded. Chat:" + chatids.get(1));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        MainActivity.loadingCounter++;
                         database = FirebaseDatabase.getInstance();
                         DatabaseReference chatsRef = database.getReference("Chats");
 
 
-                        for (String chatId : MainActivity.currentUser.getChatIds()) {
-                            DatabaseReference chatRef = chatsRef.child(chatId);
+                        for (final String chatId : MainActivity.currentUser.getChatIds()) {
+                            final DatabaseReference chatRef = chatsRef.child(chatId);
                             chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -232,8 +233,6 @@ public class DatabaseController {
                                     //        private boolean unread;
                                     //        private int unreadMessagesCounter;
                                     String cId = (String) dataSnapshot.child("chatId").getValue();
-                                    List<Message> messages = new ArrayList<>();
-                                    //TODO READ MESSAGES MANUALLY
                                     User sender = null;
                                     String p = (String) dataSnapshot.child("sender").child("phoneNum").getValue();
                                     for (User u :
@@ -253,14 +252,23 @@ public class DatabaseController {
 
                                     if (sender.getPhoneNumber().equals(MainActivity.currentUser.getPhoneNumber()))
                                         sender = receiver;
-                                    MainActivity.chats.add(new Chat(cId, (ArrayList<Message>) messages, sender, MainActivity.currentUser, unread, unreadMessageCounter));
+                                    ArrayList<Message> messages = new ArrayList<>();
 
-
+                                    Chat chat = new Chat(cId, messages, sender, MainActivity.currentUser, unread, unreadMessageCounter);
+                                    MainActivity.chats.add(chat);
+                                    //READ MESSAGES MANUALLY
+                                    readMessages(chat);
                                     Log.d("Database event","Chat "+ cId + " loaded.");
-                                    ChatsFragment fragment = new ChatsFragment();
-                                    fragment.setChats(MainActivity.chats);
-                                    MainActivity.fragmentManager.beginTransaction().
-                                            replace(R.id.frame_content, fragment).addToBackStack(null).commit();
+                                    Log.d("Database event","Chat "+ chat.getSender().getName() + " loaded.");
+                                    if(MainActivity.CURRENT_FRAGMENT_TYPE == MainActivity.CHATS_FRAGMENT_TYPE)
+                                    {
+                                        ChatsFragment fragment = new ChatsFragment();
+                                        fragment.setChats(MainActivity.chats);
+                                        MainActivity.fragmentManager.beginTransaction().
+                                                replace(R.id.frame_content, fragment).addToBackStack(null).commit();
+
+                                    }
+//                                    chatRef.removeEventListener(this);
                                 }
 
                                 @Override
@@ -269,6 +277,7 @@ public class DatabaseController {
                                 }
                             });
                         }
+                        MainActivity.loadingCounter--;
                     }
                 }).start();
             }
@@ -278,6 +287,116 @@ public class DatabaseController {
                 Log.d("Database fail","Chat id load failed.", databaseError.toException());
             }
         });
+    }
+
+    public static void saveMessages(String chatId, ArrayList<Message> messages)
+    {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().
+                getReference("Chats").child(chatId).child("messages");
+        for (Message message : messages) {
+
+//            private String text;
+//            private String date;
+//            private User sender;
+//            private User receiver;
+//            private Bitmap imageMessage;
+
+            DatabaseReference messageRef = messagesRef.child(message.getDate());
+            messageRef.child("text").setValue(message.getText());
+            messageRef.child("date").setValue(message.getDate());
+            saveChatUser(message.getSender(), messageRef.child("sender"));
+            saveChatUser(message.getReceiver(), messageRef.child("receiver"));
+            String encodedImage = BitmapToString(message.getImageMessage());
+            messageRef.child("imageMessage").setValue(encodedImage);
+        }
+    }
+    public static void saveSingleMessage(String chatId, Message message)
+    {
+        DatabaseReference messageRef = FirebaseDatabase.getInstance().
+                getReference("Chats").child(chatId).child("messages").child(message.getDate());
+//            private String text;
+//            private String date;
+//            private User sender;
+//            private User receiver;
+//            private Bitmap imageMessage;
+
+            messageRef.child("text").setValue(message.getText());
+            messageRef.child("date").setValue(message.getDate());
+            saveChatUser(message.getSender(), messageRef.child("sender"));
+            saveChatUser(message.getReceiver(), messageRef.child("receiver"));
+            String encodedImage = BitmapToString(message.getImageMessage());
+            messageRef.child("imageMessage").setValue(encodedImage);
+    }
+
+    public static void readMessages(final Chat chat)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.loadingCounter++;
+                DatabaseReference messagesRef = FirebaseDatabase.getInstance().
+                        getReference("Chats").child(chat.getChatId()).child("messages");
+                final Query query = messagesRef.orderByChild("date");
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final ArrayList<Message> messages = new ArrayList<>();
+                        for (DataSnapshot child :
+                                dataSnapshot.getChildren()) {
+                            //            private String text;
+                            //            private String date;
+                            //            private User sender;
+                            //            private User receiver;
+                            //            private Bitmap imageMessage;
+                            String text = (String) child.child("text").getValue();
+                            String date = (String) child.child("date").getValue();
+                            User sender = null;
+
+                            String p = (String) child.child("sender").child("phoneNum").getValue();
+                            for (User u :
+                                    existingUsers) {
+                                if (u.getPhoneNumber().equals(p))
+                                    sender = u;
+                            }
+                            User receiver = null;
+                            p = (String) child.child("receiver").child("phoneNum").getValue();
+                            for (User u :
+                                    existingUsers) {
+                                if (u.getPhoneNumber().equals(p))
+                                    receiver = u;
+                            }
+
+                            String encodedImage = (String) child.child("imageMessage").getValue();
+                            Bitmap bitmap = StringToBitmap(encodedImage);
+                            Message message = new Message(text, date, sender, receiver, bitmap);
+                            messages.add(message);
+
+                        }
+                        chat.setMessages(messages);
+
+                        if(MainActivity.CURRENT_FRAGMENT_TYPE == MainActivity.CHAT_FRAGMENT_TYPE)
+                        {
+                            ChatFragment fragment = new ChatFragment();
+                            fragment.setMessages(messages);
+                            fragment.setOtherEnd(chat.getSender());
+                            Log.d(TAG, "onDataChange: " + chat.getSender().getPhoneNumber());
+                            MainActivity.fragmentManager.beginTransaction().
+                                    replace(R.id.frame_content, fragment).addToBackStack(null).commit();
+                        }
+                        MainActivity.loading.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+                MainActivity.loadingCounter--;
+            }
+        }).start();
+
     }
 
 }

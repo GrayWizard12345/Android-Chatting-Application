@@ -28,6 +28,18 @@
             android:layout_alignParentStart="true"
             />
 
+        <ProgressBar
+            android:id="@+id/progress_bar_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:outlineSpotShadowColor="@color/colorWhite"
+            android:outlineAmbientShadowColor="@color/colorWhite"
+            android:layout_toEndOf="@id/toolbar_title"
+            android:layout_toStartOf="@id/search_edit_text"
+            android:theme="@style/CircularProgress"
+            />
+
         <EditText
                 android:id="@+id/search_edit_text"
                 android:layout_width="wrap_content"

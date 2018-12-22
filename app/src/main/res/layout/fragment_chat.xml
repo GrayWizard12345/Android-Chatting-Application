@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,22 +8,27 @@
     android:id="@+id/fragment_chat"
     >
 
+
     <ListView
         android:id="@+id/messages_list_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="false"
         android:dividerHeight="0dp"
+        android:divider="@color/colorWhite"
+        android:windowSoftInputMode="adjustResize"
+        android:layout_weight="99"
         >
 
     </ListView>
 
     <LinearLayout
+        android:id="@+id/input_feild"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
+        android:layout_weight="1"
         android:background="@drawable/shape_fancy_layout">
 
         <EditText
@@ -60,4 +65,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

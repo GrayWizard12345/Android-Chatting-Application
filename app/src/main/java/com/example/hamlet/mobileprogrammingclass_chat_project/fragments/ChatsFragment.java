@@ -57,6 +57,8 @@ public class ChatsFragment extends Fragment {
                 chat.setUnreadMessagesCounter(0);
                 fragment = new ChatFragment();
                 fragment.setMessages(chat.getMessages());
+                fragment.setOtherEnd(chat.getSender());
+                fragment.setChatId(chat.getChatId());
                 MainActivity.addFragment(fragment, chat.getSender().getName(), MainActivity.CHAT_FRAGMENT_TYPE);
             }
         });

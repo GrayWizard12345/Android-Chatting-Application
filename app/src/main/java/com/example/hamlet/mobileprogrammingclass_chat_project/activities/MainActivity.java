@@ -16,6 +16,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -38,9 +41,11 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,25 +103,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int CHAT_FRAGMENT_TYPE = 3;
     public static int CURRENT_FRAGMENT_TYPE = CHATS_FRAGMENT_TYPE;
     public static Stack<Integer> FRAGMENT_TYPE_STACK = new Stack<>();
-
+    private int backPressedCounter;
+    public static int loadingCounter = 0;
+    public static ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        backPressedCounter = 0;
         id = getIntent().getStringExtra("id");
         Log.d("User event", "UserID:" + id);
         mainActivityContext = this;
         fragmentStack = new Stack<>();
         fragmentTitleStack = new Stack<>();
         fragmentManager = getSupportFragmentManager();
-
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         readContacts = new Thread(new Runnable() {
             @Override
             public void run() {
+                loadingCounter++;
                 getContactList();
+                loadingCounter--;
             }
         });
         readContacts.start();
@@ -125,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Thread(new Runnable() {
             @Override
             public void run() {
+                loadingCounter++;
                 while (true)
                 {
                     if(MainActivity.currentUser != null)
@@ -142,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                 }
+                loadingCounter--;
             }
         }).start();
 
@@ -156,6 +169,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void initViews(Bundle savedInstanceState){
 
+
+
         fragmentManager = getSupportFragmentManager();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -167,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         toolbar =  findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.search_menu_item);
+        loading = findViewById(R.id.progress_bar_icon);
+
         mTitle = toolbar.findViewById(R.id.toolbar_title);
         setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
@@ -250,6 +267,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragmentStack.push(prevFragment);
                     fragmentTitleStack.push(title);
                     FRAGMENT_TYPE_STACK.push(prevFragType);
+
+                    if (backPressedCounter == 2) {
+                        finish();
+                        System.exit(0);
+                    }
+
+                    backPressedCounter++;
+                    Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+                    new Handler().postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                        backPressedCounter = 0;
+                        }
+                    }, 2000);
+
                 }
 
             }
@@ -360,30 +394,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(reqCode, resultCode, data);
 
 
-        if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                selectedImage = getRoundedCornerBitmap(selectedImage, 100);
-                profileIcon.setImageBitmap(selectedImage);
-                profileIcon.setBackground(getResources().getDrawable(R.color.transparent));
-                profileIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                DatabaseController.putImageToUserProfile(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+        if (resultCode == RESULT_OK)
+        {
+            if (reqCode == RESULT_LOAD_IMG) {
+                try {
+                    final Uri imageUri = data.getData();
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    selectedImage = getRoundedCornerBitmap(selectedImage, 100);
+                    profileIcon.setImageBitmap(selectedImage);
+                    profileIcon.setBackground(getResources().getDrawable(R.color.transparent));
+                    profileIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    DatabaseController.putImageToUserProfile(selectedImage);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+            else if(reqCode == IMG_FOR_SENDING)
+            {
+                currentFragment.onActivityResult(reqCode, resultCode, data);
             }
 
+
         }
-        else if(resultCode == IMG_FOR_SENDING)
-        {
-            currentFragment.onActivityResult(reqCode, resultCode, data);
-        }else
+        else
         {
             Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
-
 
     }
 
@@ -570,5 +610,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTitle.setText(title);
     }
 }
-
 
