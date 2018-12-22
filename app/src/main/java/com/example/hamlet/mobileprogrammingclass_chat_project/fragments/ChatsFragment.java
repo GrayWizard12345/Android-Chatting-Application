@@ -11,10 +11,6 @@ import android.widget.ListView;
 import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
-import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
-import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -61,7 +57,7 @@ public class ChatsFragment extends Fragment {
                 chat.setUnreadMessagesCounter(0);
                 fragment = new ChatFragment();
                 fragment.setMessages(chat.getMessages());
-                MainActivity.addFragment(fragment, chat.getSender().getName());
+                MainActivity.addFragment(fragment, chat.getSender().getName(), MainActivity.CHAT_FRAGMENT_TYPE);
             }
         });
     }

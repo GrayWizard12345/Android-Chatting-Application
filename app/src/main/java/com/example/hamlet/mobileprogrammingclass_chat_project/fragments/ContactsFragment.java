@@ -1,8 +1,5 @@
 package com.example.hamlet.mobileprogrammingclass_chat_project.fragments;
 
-import android.Manifest;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -65,21 +62,31 @@ public class ContactsFragment extends Fragment {
 
                 boolean notFound = true;
                 User user = new User(contacts.get(i).getContactName(), contacts.get(i).getContactIdentifier(), contacts.get(i).getContactIdentifier());
+                for (Chat chat :
+                        MainActivity.chats) {
+                    if (chat.getSender().getPhoneNumber().equals(user.getPhoneNumber()))
+                    {
+                        chatFragment = new ChatFragment();
+                        chatFragment.setMessages(chat.getMessages());
+                        MainActivity.addFragment(chatFragment, user.getName(), MainActivity.CHAT_FRAGMENT_TYPE);
+                        return;
+                    }
+                }
                 for (User exsUser :DatabaseController.existingUsers) {
                     if(exsUser.getPhoneNumber().equals(user.getPhoneNumber()))
                     {
                         user = exsUser;
                         Chat chat = new Chat(user.getPhoneNumber(), new ArrayList<Message>(), user, MainActivity.currentUser, false, 0);
-
                         //save chat to database
                         DatabaseController.saveChat(chat);
                         MainActivity.chats.add(chat);
                         MainActivity.currentUser.getChatIds().add(chat.getChatId());
+                        user.getChatIds().add(chat.getChatId());
                         DatabaseController.saveChatIds(MainActivity.currentUser);
                         DatabaseController.saveChatIds(user);
                         chatFragment = new ChatFragment();
                         chatFragment.setMessages(chat.getMessages());
-                        MainActivity.addFragment(chatFragment, user.getName());
+                        MainActivity.addFragment(chatFragment, user.getName(), MainActivity.CHAT_FRAGMENT_TYPE);
                         notFound = false;
                         break;
                     }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -12,8 +13,10 @@ import com.example.hamlet.mobileprogrammingclass_chat_project.R;
 import com.example.hamlet.mobileprogrammingclass_chat_project.activities.MainActivity;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.ApplicationUser;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Chat;
+import com.example.hamlet.mobileprogrammingclass_chat_project.classes.Message;
 import com.example.hamlet.mobileprogrammingclass_chat_project.classes.User;
 import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ChatsFragment;
+import com.example.hamlet.mobileprogrammingclass_chat_project.fragments.ContactsFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +43,8 @@ public class DatabaseController {
 
     public static ArrayList<User> existingUsers;
 
+    public static String TAG = "Database check";
+
     public DatabaseController() {
     }
 
@@ -62,8 +67,9 @@ public class DatabaseController {
                         bitmap = MainActivity.StringToBitmap(encodedImage);
                     }
                     ArrayList<String> chatIds = new ArrayList<>();
+                    long size = child.child("chatIds").getChildrenCount();
                     for (DataSnapshot c: child.child("chatIds").getChildren()) {
-                        chatIds.add((String) c.getValue());
+                        chatIds.add((String) c.child((size-1) + "").getValue());
                     }
 
                     User u = new User(name, phoneNum, email);
@@ -120,7 +126,7 @@ public class DatabaseController {
                     decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 }
 
-                Log.d("Database get Data", "Name:" + name + "email:" + email);
+                Log.d(TAG, "onDataChange: Name:" + name + "email:" + email);
                 MainActivity.currentUser = new ApplicationUser(name,email,phone);
                 MainActivity.currentUser.setUserIcon(decodedByte);
                 MainActivity.profileIcon = navigationMenu.getHeaderView(0).findViewById(R.id.current_profile_icon);
@@ -152,12 +158,6 @@ public class DatabaseController {
 
     public static void saveChat(Chat chat)
     {
-//        private String chatId;
-//        private List<Message> messages;
-//        private User sender;
-//        private User receiver;
-//        private boolean unread;
-//        private int unreadMessagesCounter;
 
         DatabaseReference chatsRef = FirebaseDatabase.getInstance().getReference("Chats");
         DatabaseReference chatRef = chatsRef.child(chat.getChatId());
@@ -174,7 +174,15 @@ public class DatabaseController {
     public static void saveChatIds(User user)
     {
         DatabaseReference users = FirebaseDatabase.getInstance().getReference("Users");
-        users.child(user.getEmail().replaceAll("\\.","")).child("chatIds").setValue(user.getChatIds());
+        String id = user.getEmail().replaceAll("\\.","");
+        Log.d(TAG, "saveChatIds: id:" + id);
+        DatabaseReference cIds =  users.child(id).child("chatIds");
+
+        for (int i = 0; i < user.getChatIds().size(); i++) {
+//            cIds.child(i + "").push();
+            cIds.child(i + "").setValue(user.getChatIds().get(i));
+        }
+        //cIds.setValue(user.getChatIds());
     }
 
     public static void saveChatUser(User user, DatabaseReference ref)
@@ -186,22 +194,24 @@ public class DatabaseController {
             ref.child("image").setValue(MainActivity.BitmapToString(user.getUserIcon()));
     }
 
-    public static void getChats()
+    public static void getChatsOfCurrentUser()
     {
         database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("Users");
         userRef = usersRef.child(MainActivity.id);
 
-        DatabaseReference chatIds = usersRef.child("chatIds");
+        DatabaseReference chatIds = userRef.child("chatIds");
         chatIds.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<String> chatids = new ArrayList<>();
+                ArrayList<String> chatids = new ArrayList<>();;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
-                    chatids.add(child.getValue(String.class));
+                    chatids.add((String) child.getValue());
                 }
                 MainActivity.currentUser.setChatIds(chatids);
                 Log.d("Database event","Chat ids loaded. Size:" + chatids.size());
+                Log.d("Database event","Chat ids loaded. Chat:" + chatids.get(0));
+                Log.d("Database event","Chat ids loaded. Chat:" + chatids.get(1));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -214,12 +224,43 @@ public class DatabaseController {
                             chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    MainActivity.chats.add((Chat) dataSnapshot.getValue());
-                                    Log.d("Database event","Chat "+ ((Chat) dataSnapshot.getValue()).getChatId() + " loaded.");
-                                    if(MainActivity.currentFragment instanceof ChatsFragment)
-                                    {
-                                        ((ChatsFragment)MainActivity.currentFragment).getChatsListView().postInvalidate();
+
+                                    //        private String chatId;
+                                    //        private List<Message> messages;
+                                    //        private User sender;
+                                    //        private User receiver;
+                                    //        private boolean unread;
+                                    //        private int unreadMessagesCounter;
+                                    String cId = (String) dataSnapshot.child("chatId").getValue();
+                                    List<Message> messages = new ArrayList<>();
+                                    //TODO READ MESSAGES MANUALLY
+                                    User sender = null;
+                                    String p = (String) dataSnapshot.child("sender").child("phoneNum").getValue();
+                                    for (User u :
+                                            existingUsers) {
+                                        if (u.getPhoneNumber().equals(p))
+                                            sender = u;
                                     }
+                                    User receiver = null;
+                                    p = (String) dataSnapshot.child("receiver").child("phoneNum").getValue();
+                                    for (User u :
+                                            existingUsers) {
+                                        if (u.getPhoneNumber().equals(p))
+                                            receiver = u;
+                                    }
+                                    boolean unread = false;
+                                    int unreadMessageCounter = 0;
+
+                                    if (sender.getPhoneNumber().equals(MainActivity.currentUser.getPhoneNumber()))
+                                        sender = receiver;
+                                    MainActivity.chats.add(new Chat(cId, (ArrayList<Message>) messages, sender, MainActivity.currentUser, unread, unreadMessageCounter));
+
+
+                                    Log.d("Database event","Chat "+ cId + " loaded.");
+                                    ChatsFragment fragment = new ChatsFragment();
+                                    fragment.setChats(MainActivity.chats);
+                                    MainActivity.fragmentManager.beginTransaction().
+                                            replace(R.id.frame_content, fragment).addToBackStack(null).commit();
                                 }
 
                                 @Override

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //A simple stack data structure is used to keep track of fragments
     private static Stack<Fragment> fragmentStack;
     private static Stack<String> fragmentTitleStack;
-    private static FragmentManager fragmentManager;
+    public static FragmentManager fragmentManager;
     private ActionBarDrawerToggle toggle;
     protected static ActionBar actionBar;
     static MenuItem prevMenuItem;
@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static TextView mTitle;
     public static boolean backProcessing = false;
     public static String id;
+    public static int CHATS_FRAGMENT_TYPE = 0;
+    public static int CONTACTS_FRAGMENT_TYPE = 1;
+    public static int ABOUT_US_FRAGMENT_TYPE = 2;
+    public static int CHAT_FRAGMENT_TYPE = 3;
+    public static int CURRENT_FRAGMENT_TYPE = CHATS_FRAGMENT_TYPE;
+    public static Stack<Integer> FRAGMENT_TYPE_STACK = new Stack<>();
 
 
     @Override
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if(MainActivity.currentUser != null)
                     {
                         Log.d("UserNotNull", "User:" + MainActivity.currentUser);
-                        DatabaseController.getChats();
+                        DatabaseController.getChatsOfCurrentUser();
                         DatabaseController.getUsers();
                         break;
                     }else {
@@ -204,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
             fragmentTitleStack.push(getResources().getString(R.string.app_name));
+            FRAGMENT_TYPE_STACK.push(CURRENT_FRAGMENT_TYPE);
             mTitle.setText(getResources().getString(R.string.app_name));
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -228,11 +235,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(!fragmentStack.isEmpty())
             {
                 prevFragment = fragmentStack.pop();
+                int prevFragType = FRAGMENT_TYPE_STACK.pop();
                 title = fragmentTitleStack.pop();
                 if(!fragmentStack.isEmpty() && !fragmentTitleStack.isEmpty())
                 {
                     prevFragment = fragmentStack.peek();
                     title = fragmentTitleStack.peek();
+                    CURRENT_FRAGMENT_TYPE = FRAGMENT_TYPE_STACK.peek();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     transaction.replace(R.id.frame_content, prevFragment).commit();
                 }
@@ -240,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     fragmentStack.push(prevFragment);
                     fragmentTitleStack.push(title);
+                    FRAGMENT_TYPE_STACK.push(prevFragType);
                 }
 
             }
@@ -265,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch(menuItem.getItemId()) {
             case R.id.nav_chats:
                 fragmentClass = ChatsFragment.class;
+                CURRENT_FRAGMENT_TYPE = CHATS_FRAGMENT_TYPE;
                 break;
             case R.id.nav_contacts:
                 if(readContacts != null) {
@@ -275,17 +286,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 fragmentClass = ContactsFragment.class;
+                CURRENT_FRAGMENT_TYPE = CONTACTS_FRAGMENT_TYPE;
                 break;
             case R.id.nav_about_us:
                 fragmentClass = AboutUsFragment.class;
+                CURRENT_FRAGMENT_TYPE = ABOUT_US_FRAGMENT_TYPE;
                 break;
             default:
         }
         try {
             fragment = (Fragment) fragmentClass.newInstance();
-            if(fragment instanceof ContactsFragment)
+            if(CURRENT_FRAGMENT_TYPE == CONTACTS_FRAGMENT_TYPE)
                 ((ContactsFragment) fragment).setContacts(contacts);
-            else if(fragment instanceof ChatsFragment)
+            else if(CURRENT_FRAGMENT_TYPE == CHATS_FRAGMENT_TYPE)
                 ((ChatsFragment)fragment).setChats(chats);
         } catch (Exception e) {
             e.printStackTrace();
@@ -298,13 +311,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         menuItem.setChecked(true);
 
         // Insert the fragment by replacing any existing fragment
-        if(!fragment.getClass().equals(fragmentStack.peek().getClass()))
+        if(CURRENT_FRAGMENT_TYPE != FRAGMENT_TYPE_STACK.peek())
         {
             fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
             fragmentStack.push(fragment);
+            FRAGMENT_TYPE_STACK.push(CURRENT_FRAGMENT_TYPE);
             currentFragment = fragment;
             fragmentTitleStack.push(title);
             Log.d("Fragment management", "Fragment Stack size:" + fragmentStack.size() );
+            if(CURRENT_FRAGMENT_TYPE == ABOUT_US_FRAGMENT_TYPE)
 
             // Set action bar title
             mTitle.setText(title);
@@ -497,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(currentFragment instanceof ContactsFragment)
+            if(CURRENT_FRAGMENT_TYPE == CONTACTS_FRAGMENT_TYPE)
             {
                 contactsSearchResult = new ArrayList<>();
                 for (Contact contact : contacts) {
@@ -511,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new ContactsFragment();
                 ((ContactsFragment)fragment).setContacts(contactsSearchResult);
             }
-            else if(currentFragment instanceof ChatsFragment)
+            else if(CURRENT_FRAGMENT_TYPE == CHATS_FRAGMENT_TYPE)
             {
                 chatsSearchResult = new ArrayList<>();
                 for (Chat chat : chats) {
@@ -536,18 +551,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (!once)
             {
                 fragmentStack.push(fragment);
-                fragmentTitleStack.push(getResources().getString(R.string.search));
-                mTitle.setText(getResources().getString(R.string.search));
+                fragmentTitleStack.push("Search");
+                FRAGMENT_TYPE_STACK.push(-1);
+                mTitle.setText("Search");
                 currentFragment = fragment;
                 once = true;
             }
         }
     };
     //Change visible fragment
-    public static void addFragment(Fragment fragment, String title)
+    public static void addFragment(Fragment fragment, String title, int FRAGMENT_TYPE)
     {
         fragmentManager.beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null).commit();
         fragmentStack.push(fragment);
+        FRAGMENT_TYPE_STACK.push(FRAGMENT_TYPE);
         fragmentTitleStack.push(title);
         currentFragment = fragment;
         mTitle.setText(title);

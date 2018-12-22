@@ -16,6 +16,7 @@ public class User  implements Serializable {
     private Bitmap userIcon;
     private String password;
     private List<String> chatIds;
+    private String email;
 
     public User(String name, String phoneNumber, String email) {
         this.name = name;
@@ -24,7 +25,7 @@ public class User  implements Serializable {
         chatIds = new ArrayList<>();
     }
 
-    private String email;
+
 
     public User() {
     }
