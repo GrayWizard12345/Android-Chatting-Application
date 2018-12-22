@@ -79,6 +79,7 @@ public class ChatFragment extends Fragment {
         messageImage = view.findViewById(R.id.message_image);
 
 
+        messagesListView.setSelection(messagesListView.getCount() - 1);
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {

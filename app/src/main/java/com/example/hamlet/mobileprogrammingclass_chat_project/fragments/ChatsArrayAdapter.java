@@ -55,8 +55,10 @@ public class ChatsArrayAdapter extends ArrayAdapter {
             lastMessage = chat.getMessages().get(chat.getMessages().size() - 1).getSender().getName() +
                     ":" + chat.getMessages().get(chat.getMessages().size() - 1).getText();
         if(!chat.getMessages().isEmpty())
-        if(chat.getMessages().get(chat.getMessages().size() - 1).getText() == null)
+        if(chat.getMessages().get(chat.getMessages().size() - 1).getText() == null || chat.getMessages().get(chat.getMessages().size() - 1).getText().equals(""))
             lastMessage += "image";
+        if (lastMessage.length() > 15)
+            lastMessage = lastMessage.substring(0, 15);
         holder.setData(chat.getSender().getUserIcon(),
                 chat.getSender().getName(), lastMessage,
                 chat.getUnreadMessagesCounter());
